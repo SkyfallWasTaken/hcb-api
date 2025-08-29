@@ -4,7 +4,7 @@
     "hono": "^4.9.4"
   },
   "name": "hcb-api",
-  "module": "src/index.ts",
+  "module": "src/index.tsx",
   "type": "module",
   "private": true,
   "devDependencies": {
