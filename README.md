@@ -25,9 +25,11 @@ bun .
 
 Visit `localhost:3000` (or whatever the domain is) and sign in with the master key.
 
+![Login page](.github/login.png)
+
 Then, click [here](https://hcb.hackclub.com/api/v4/oauth/authorize?client_id=yt8JHmPDmmYYLUmoEiGtocYwg5fSOGCrcIY3G-vkMRs&redirect_uri=hcb%3A%2F%2F&response_type=code&scope=read%20write) to visit HCB Mobile's authorization page.
 
-![HCB Mobile OAuth page](image-1.png)
+![HCB Mobile OAuth page](.github/hcb-screen.png)
 
 Open DevTools with `Ctrl+Shift+I`/`Cmd+Shift+I` and navigate to the Network tab.
 
@@ -39,6 +41,6 @@ hcb://?code=pnbZE22FDA-cd919de5cd0d71b0121a6ac
 
 Copy the `code` parameter and paste it into the UI. The page should hopefully look like this:
 
-![UI](image.png)
+![UI](.github/dashboard.png)
 
-Tokens are refreshed every two hours.
+Tokens are refreshed every two hours automatically.
