@@ -11,10 +11,8 @@ const env = type({
 
 const app = new Hono()
 
-// Hash the master key for cookie storage
 const masterKeyHash = createHash('sha256').update(env.MASTER_KEY).digest('hex')
 
-// Auth middleware
 const requireAuth = async (c: any, next: any) => {
   const authHash = getCookie(c, 'auth')
   if (authHash !== masterKeyHash) {
@@ -23,7 +21,6 @@ const requireAuth = async (c: any, next: any) => {
   await next()
 }
 
-// Components
 const Layout = ({ children, title = "HCB API Manager" }: { children: any, title?: string }) => (
   <html>
     <head>
