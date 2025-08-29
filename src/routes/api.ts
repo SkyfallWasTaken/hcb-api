@@ -21,10 +21,10 @@ export const apiProxyHandler = async (c: Context) => {
       ...c.req, // Forward the original request
       headers: {
         'Authorization': `Bearer ${tokenResponse.access_token}`,
-        // Remove the original Authorization header to prevent conflicts
+        // Remove the original Authorization & Host headers to prevent conflicts
         ...Object.fromEntries(
           Object.entries(c.req.header()).filter(([key]) =>
-            key.toLowerCase() !== 'authorization'
+            key.toLowerCase() !== 'authorization' && key.toLowerCase() !== 'host'
           )
         ),
       },

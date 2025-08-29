@@ -76,7 +76,7 @@ export const Dashboard = ({
 
       {/* Exchange Code Form */}
       <div className="bg-[#1a1b27] border border-gray-800 p-6">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Exchange Authorization Code</h2>
           <a
             href="/oauth-wizard"
@@ -85,9 +85,6 @@ export const Dashboard = ({
             Use setup wizard
           </a>
         </div>
-        <p className="text-[#565f89] mb-4">
-          Need help getting an authorization code? Use the wizard above for step-by-step instructions.
-        </p>
         <form action="/exchange" method="POST" className="space-y-4">
           <div>
             <label htmlFor="code" className="block text-sm font-medium text-[#565f89] mb-2">
