@@ -50,7 +50,8 @@ export const Dashboard = ({
             </p>
             <p className="text-sm">
               <span className="font-medium">Valid for:</span> {(() => {
-                const totalSeconds = tokenInfo.expires_at - Math.floor(Date.now() / 1000);
+                const nowUnix = Math.floor(Date.now() / 1000);
+                const totalSeconds = tokenInfo.expires_at - nowUnix;
                 const totalMinutes = Math.floor(totalSeconds / 60);
                 const hours = Math.floor(totalMinutes / 60);
                 const minutes = totalMinutes % 60;
