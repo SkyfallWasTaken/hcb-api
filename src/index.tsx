@@ -1,7 +1,6 @@
 import { type } from "arktype"
 import { getValidTokenResponse, exchangeCodeForTokens, isTokenResponseStillValid, TokenResponse } from "./oauth"
 import { Hono } from "hono"
-import { jsx } from "hono/jsx"
 import { getCookie, setCookie } from "hono/cookie"
 import { createHash } from "crypto"
 
