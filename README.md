@@ -1,10 +1,21 @@
 # HCB API proxy
 
+A super easy way to use the [HCB v4 API](https://hcb-developers.anscg.net/api-reference/), even if you are not a member of HQ. Normally, you'd have to get a member of the HCB engineering team to create an OAuth app for you, but OAuth apps are HQ-only and can be annoying to use.
+
+HCB-API handles things like token refreshes and code exchanges for you, so you don't have to worry about things like access tokens expiring. In other words, HCB-API makes v4 authentication much simpler.
+
+Once it's set up, it's very similar to using the standard v4 API, except you simply use the HCB-API domain instead of `hcb.hackclub.com`. For example, if you want to use the `https://hcb.hackclub.com/api/v4/user/card_grants` endpoint, do something like this:
+
+```bash
+curl https://your_hcb_api_domain.com/api/v4/user/card_grants \
+  --header 'Authorization: Bearer YOUR_MASTER_KEY'
+```
+
 ## Initial setup
 
 This will take about 10-15 minutes.
 
-To install dependencies:
+First, install dependencies:
 
 ```bash
 bun install
@@ -15,6 +26,7 @@ Fill in the `.env`:
 ```
 HCB_CLIENT_ID="yt8JHmPDmmYYLUmoEiGtocYwg5fSOGCrcIY3G-vkMRs" # HCB Mobile
 MASTER_KEY="..." # cat /dev/urandom | head -30 | sha256sum
+NODE_ENV=production
 ```
 
 To run:
@@ -27,20 +39,10 @@ Visit `localhost:3000` (or whatever the domain is) and sign in with the master k
 
 ![Login page](.github/login.png)
 
-Then, click [here](https://hcb.hackclub.com/api/v4/oauth/authorize?client_id=yt8JHmPDmmYYLUmoEiGtocYwg5fSOGCrcIY3G-vkMRs&redirect_uri=hcb%3A%2F%2F&response_type=code&scope=read%20write) to visit HCB Mobile's authorization page.
+Then, click the "Use setup wizard" button to connect HCB-API with your HCB account.
 
-![HCB Mobile OAuth page](.github/hcb-screen.png)
-
-Open DevTools with `Ctrl+Shift+I`/`Cmd+Shift+I` and navigate to the Network tab.
-
-Then, click the "Authorize" button on the page. You will see an `authorize` request in the Network tab - click into it and scroll down to the `Location` response header. It should look like this:
-
-```
-hcb://?code=pnbZE22FDA-cd919de5cd0d71b0121a6ac
-```
-
-Copy the `code` parameter and paste it into the UI. The page should hopefully look like this:
+The dashboard should hopefully look like this:
 
 ![UI](.github/dashboard.png)
 
-Tokens are refreshed every two hours automatically.
+If you reached this stage, you're done! You can now call the HCB API with the proxy. (See above)

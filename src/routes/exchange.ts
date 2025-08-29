@@ -10,7 +10,7 @@ export const exchangeHandler = async (c: Context) => {
     const tokenResponse = await exchangeCodeForTokens(code, env.HCB_CLIENT_ID)
     await Bun.file(env.TOKEN_FILE_PATH).write(JSON.stringify(tokenResponse, null, 2))
 
-    return c.redirect('/')
+    return c.redirect('/?success=token_exchanged')
   } catch (error) {
     console.error('Exchange error:', error)
     return c.redirect('/?error=exchange_failed')

@@ -14,5 +14,9 @@ export const dashboardHandler = async (c: Context) => {
     // Token file doesn't exist or is invalid
   }
 
-  return c.html(Dashboard({ tokenInfo }) as unknown as string)
+  // Check for success/error query parameters
+  const success = c.req.query('success')
+  const error = c.req.query('error')
+
+  return c.html(Dashboard({ tokenInfo, success, error }) as unknown as string)
 }

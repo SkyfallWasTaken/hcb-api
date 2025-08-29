@@ -6,13 +6,16 @@ import {
   logoutHandler,
   exchangeHandler,
   apiProxyHandler,
-  loginPageHandler
+  loginPageHandler,
+  oauthWizardHandler
 } from "./routes"
 
 const app = new Hono()
 
 // Routes
 app.get('/', requireAuth, dashboardHandler)
+app.get('/dashboard', requireAuth, dashboardHandler)
+app.get('/oauth-wizard', requireAuth, oauthWizardHandler)
 app.get('/login-page', loginPageHandler)
 app.post('/login', loginHandler)
 app.post('/logout', logoutHandler)
