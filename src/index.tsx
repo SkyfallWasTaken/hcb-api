@@ -17,6 +17,6 @@ app.get('/login-page', loginPageHandler)
 app.post('/login', loginHandler)
 app.post('/logout', logoutHandler)
 app.post('/exchange', requireAuth, exchangeHandler)
-app.all('/api/*', apiProxyHandler)
+app.all('/api/v4/*', apiProxyHandler)
 
 export default app
