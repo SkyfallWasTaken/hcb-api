@@ -12,7 +12,7 @@ export const apiProxyHandler = async (c: Context) => {
 
   const tokenResponse = await getValidTokenResponse(env.HCB_CLIENT_ID)
 
-  const targetUrl = `https://hcb.hackclub.com/api/v4${c.req.path.replace('/api', '')}`
+  const targetUrl = `https://hcb.hackclub.com/api/v4${c.req.path.replace('/api/v4', '')}`
   console.log(targetUrl)
 
   console.log(tokenResponse)
