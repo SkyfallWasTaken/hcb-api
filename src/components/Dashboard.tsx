@@ -24,7 +24,7 @@ export const Dashboard = ({
       {/* Success/Error Messages */}
       {success === 'token_exchanged' && (
         <div className="bg-[#1e202e] border border-[#9ece6a] p-4 mb-6 rounded">
-          <p className="text-[#9ece6a] font-medium">🎉 Success!</p>
+          <p className="text-[#9ece6a] font-medium">Success!</p>
           <p className="text-sm text-[#565f89]">
             Your authorization code has been successfully exchanged for an access token. You can now use the HCB API proxy!
           </p>
@@ -33,7 +33,7 @@ export const Dashboard = ({
 
       {error === 'exchange_failed' && (
         <div className="bg-[#1e202e] border border-[#f7768e] p-4 mb-6 rounded">
-          <p className="text-[#f7768e] font-medium">❌ Exchange Failed</p>
+          <p className="text-[#f7768e] font-medium">Exchange Failed</p>
           <p className="text-sm text-[#565f89]">
             There was an error exchanging your authorization code. Please try again or use the setup wizard for help.
           </p>
@@ -59,7 +59,7 @@ export const Dashboard = ({
           <div className="space-y-3">
             <p className="text-gray-500">No token found</p>
             <div className="bg-[#1e202e] border border-[#f7768e] p-4 rounded">
-              <p className="text-[#f7768e] font-medium mb-2">⚠️ Setup Required</p>
+              <p className="text-[#f7768e] font-medium mb-2">Setup Required</p>
               <p className="text-sm text-[#565f89] mb-3">
                 You need to complete the OAuth setup to start using the HCB API proxy.
               </p>
@@ -67,7 +67,7 @@ export const Dashboard = ({
                 href="/oauth-wizard"
                 className="inline-block bg-[#7aa2f7] text-black px-4 py-2 hover:brightness-110 transition font-medium text-sm"
               >
-                🚀 Start Setup Wizard
+                Start setup wizard
               </a>
             </div>
           </div>
