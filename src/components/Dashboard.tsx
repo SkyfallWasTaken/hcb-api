@@ -50,10 +50,14 @@ export const Dashboard = ({
             </p>
             <p className="text-sm">
               <span className="font-medium">Valid for:</span> {(() => {
-                const totalMinutes = Math.round((tokenInfo.expires_at - Date.now() / 1000) / 60);
+                const totalSeconds = tokenInfo.expires_at - Math.floor(Date.now() / 1000);
+                const totalMinutes = Math.floor(totalSeconds / 60);
                 const hours = Math.floor(totalMinutes / 60);
                 const minutes = totalMinutes % 60;
-                if (hours > 0) {
+
+                if (totalSeconds <= 0) {
+                  return "Expired";
+                } else if (hours > 0) {
                   return `${hours}h ${minutes}m`;
                 } else {
                   return `${minutes}m`;
