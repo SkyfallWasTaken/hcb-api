@@ -14,7 +14,7 @@ export const Dashboard = ({
     <div className="min-h-[90%] max-w-4xl mx-auto p-6">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">HCB API Manager</h1>
-        <form action="/logout" method="POST">
+        <form action="/logout" method="post">
           <button className="bg-[#f7768e] text-black px-4 py-2 hover:brightness-110 transition">
             Logout
           </button>
@@ -49,7 +49,16 @@ export const Dashboard = ({
               <span className="font-medium">Expires:</span> {new Date(tokenInfo.expires_at * 1000).toLocaleString()}
             </p>
             <p className="text-sm">
-              <span className="font-medium">Valid for:</span> {Math.round((tokenInfo.expires_at - Date.now() / 1000) / 3600)} hours
+              <span className="font-medium">Valid for:</span> {(() => {
+                const totalMinutes = Math.round((tokenInfo.expires_at - Date.now() / 1000) / 60);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                if (hours > 0) {
+                  return `${hours}h ${minutes}m`;
+                } else {
+                  return `${minutes}m`;
+                }
+              })()}
             </p>
             <div className={`inline-block px-2 py-1 text-xs ${tokenInfo.isValid ? 'bg-[#9ece6a] text-black' : 'bg-red-100 text-red-800'}`}>
               {tokenInfo.isValid ? 'Valid' : 'Expired'}
@@ -85,7 +94,7 @@ export const Dashboard = ({
             Use setup wizard
           </a>
         </div>
-        <form action="/exchange" method="POST" className="space-y-4">
+        <form action="/exchange" method="post" className="space-y-4">
           <div>
             <label htmlFor="code" className="block text-sm font-medium text-[#565f89] mb-2">
               Authorization Code
