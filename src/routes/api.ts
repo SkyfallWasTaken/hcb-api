@@ -1,4 +1,5 @@
 import { Context } from "hono"
+import { proxy } from "hono/proxy"
 import { getValidTokenResponse } from "../oauth"
 import { env } from "../config/env"
 
@@ -12,25 +13,24 @@ export const apiProxyHandler = async (c: Context) => {
   const tokenResponse = await getValidTokenResponse(env.HCB_CLIENT_ID)
 
   const targetUrl = `https://hcb.hackclub.com/api/v4${c.req.path.replace('/api', '')}`
+  console.log(targetUrl)
 
-  const proxyRequest = new Request(targetUrl, {
-    method: c.req.method,
-    headers: {
-      ...Object.fromEntries(Object.entries(c.req.header())),
-      'Authorization': `Bearer ${tokenResponse.access_token}`,
-    },
-    body: c.req.method !== 'GET' && c.req.method !== 'HEAD' ? await c.req.text() : undefined
-  })
-
+  console.log(tokenResponse)
   try {
-    const response = await fetch(proxyRequest)
-    const responseBody = await response.text()
-
-    return new Response(responseBody, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers
+    const response = await proxy(targetUrl, {
+      ...c.req, // Forward the original request
+      headers: {
+        'Authorization': `Bearer ${tokenResponse.access_token}`,
+        // Remove the original Authorization header to prevent conflicts
+        ...Object.fromEntries(
+          Object.entries(c.req.header()).filter(([key]) =>
+            key.toLowerCase() !== 'authorization'
+          )
+        ),
+      },
     })
+
+    return response
   } catch (error) {
     console.error('Proxy error:', error)
     return c.json({ error: 'Failed to proxy request' }, 500)
