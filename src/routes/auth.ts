@@ -9,7 +9,7 @@ export const loginHandler = async (c: Context) => {
   const masterKey = body.masterKey as string
 
   if (masterKey === env.MASTER_KEY) {
-    setCookie(c, 'auth', masterKeyHash, {
+    setCookie(c, '_hcbapi_auth', masterKeyHash, {
       maxAge: 30 * 24 * 60 * 60, // 30 days
       httpOnly: true,
       secure: true,
@@ -22,6 +22,6 @@ export const loginHandler = async (c: Context) => {
 }
 
 export const logoutHandler = (c: Context) => {
-  setCookie(c, 'auth', '', { maxAge: 0 })
+  setCookie(c, '_hcbapi_auth', '', { maxAge: 0 })
   return c.redirect('/')
 }
