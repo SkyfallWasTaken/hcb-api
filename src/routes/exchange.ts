@@ -8,7 +8,7 @@ export const exchangeHandler = async (c: Context) => {
     const code = body.code as string
 
     const tokenResponse = await exchangeCodeForTokens(code, env.HCB_CLIENT_ID)
-    await Bun.file("token.json").write(JSON.stringify(tokenResponse, null, 2))
+    await Bun.file(env.TOKEN_FILE_PATH).write(JSON.stringify(tokenResponse, null, 2))
 
     return c.redirect('/')
   } catch (error) {

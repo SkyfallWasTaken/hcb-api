@@ -1,4 +1,5 @@
 import { type } from "arktype"
+import { env } from "./config/env"
 
 export const TokenResponse = type({
   created_at: "number > 0",
@@ -49,12 +50,12 @@ export async function isTokenResponseStillValid(tokenResponse: TokenResponse): P
 }
 
 export async function getValidTokenResponse(clientId: string) {
-  const oldResponse = TokenResponse.assert(await Bun.file("token.json").json());
+  const oldResponse = TokenResponse.assert(await Bun.file(env.TOKEN_FILE_PATH).json());
   if (await isTokenResponseStillValid(oldResponse)) {
     return oldResponse;
   }
 
   const newResponse = await useRefreshToken(oldResponse.refresh_token, clientId);
-  await Bun.file("token.json").write(JSON.stringify(newResponse, null, 2));
+  await Bun.file(env.TOKEN_FILE_PATH).write(JSON.stringify(newResponse, null, 2));
   return newResponse;
 }
