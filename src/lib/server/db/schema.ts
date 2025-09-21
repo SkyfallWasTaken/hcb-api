@@ -1,4 +1,4 @@
-import { pgTable, serial, text, boolean, integer, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, boolean, integer, timestamp, index } from 'drizzle-orm/pg-core';
 import { nanoid } from 'nanoid';
 
 export const app = pgTable("apps", {
@@ -18,7 +18,10 @@ export const oauthToken = pgTable("oauth_tokens", {
 	expiresIn: integer("expires_in").notNull(),
 	expiresAt: integer("expires_at").notNull(),
 	updatedAt: timestamp("updated_at").defaultNow().notNull(),
-})
+}, (table) => ([
+	index("oauth_tokens_expires_at_idx").on(table.expiresAt),
+	index("oauth_tokens_updated_at_idx").on(table.updatedAt),
+]))
 
 export const auditLog = pgTable("audit_logs", {
 	id: text("id").primaryKey().$default(() => `log_${nanoid(8)}`),
@@ -32,4 +35,9 @@ export const auditLog = pgTable("audit_logs", {
 	responseHeaders: text("response_headers").notNull(),
 	responseBody: text("response_body"),
 	timestamp: timestamp("timestamp").defaultNow().notNull(),
-})
+}, (table) => ([
+	index("audit_logs_app_id_timestamp_idx").on(table.appId, table.timestamp),
+	index("audit_logs_timestamp_idx").on(table.timestamp),
+	index("audit_logs_method_idx").on(table.method),
+	index("audit_logs_response_status_idx").on(table.responseStatus),
+]))

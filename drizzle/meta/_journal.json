@@ -43,6 +43,13 @@
       "when": 1758493726567,
       "tag": "0005_volatile_nocturne",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1758495398960,
+      "tag": "0006_massive_william_stryker",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,6 @@ import { type } from "arktype"
 import { db } from "./db"
 import { oauthToken } from "./db/schema"
 import { eq } from "drizzle-orm"
-import { env } from '$env/dynamic/private'
 
 export const TokenResponse = type({
   created_at: "number > 0",
