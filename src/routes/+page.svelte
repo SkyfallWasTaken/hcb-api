@@ -1,8 +1,8 @@
 <script lang="ts">
 	import PageHeader from '$lib/components/page-header.svelte';
-	import { Button } from '$lib/components/ui/button';
-  import Plus from '@lucide/svelte/icons/plus';
-  import NewProjectDialog from '$lib/components/home/new-project-dialog.svelte';
+	import NewProjectDialog from '$lib/components/home/new-project-dialog.svelte';
+
+	let { data } = $props();
 </script>
 
 <PageHeader>
@@ -13,6 +13,6 @@
 	</svelte:fragment>
 
 	<div slot="actions">
-		<NewProjectDialog />
+		<NewProjectDialog {data} />
 	</div>
 </PageHeader>

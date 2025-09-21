@@ -1,0 +1,1 @@
+ALTER TABLE "apps" ALTER COLUMN "id" SET DATA TYPE text;

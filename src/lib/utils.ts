@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { nanoid } from "nanoid";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -11,3 +12,14 @@ export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;
 export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, "children"> : T;
 export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
+
+export async function genApiKey() {
+	const key = `hcbapi_${nanoid(32)}`;
+	const hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(key));
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	const hash = Buffer.from(hashArray).toString('hex');
+	return {
+		key,
+		hash,
+	};
+}

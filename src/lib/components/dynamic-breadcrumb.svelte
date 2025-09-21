@@ -47,6 +47,7 @@
 			const isLast = index === segments.length - 1;
 
 			let label: string;
+			let href = currentPath;
 
 			if (isAppId(segment)) {
 				label = getAppName(segment);
@@ -58,19 +59,19 @@
 				).join(' ');
 			}
 
+			// Redirect /apps to / instead
+			if (currentPath === '/apps') {
+				href = '/';
+			}
+
 			crumbs.push({
 				label,
-				href: currentPath,
+				href,
 				isPage: isLast
 			});
 		});
 
 		return crumbs;
-	}
-
-	function handleClick(href: string, event: MouseEvent): void {
-		event.preventDefault();
-		goto(href);
 	}
 </script>
 
@@ -83,7 +84,6 @@
 				{:else}
 					<Breadcrumb.Link
 						href={crumb.href}
-						onclick={(e) => handleClick(crumb.href, e)}
 					>
 						{crumb.label}
 					</Breadcrumb.Link>

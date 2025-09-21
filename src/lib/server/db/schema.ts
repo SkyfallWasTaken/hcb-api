@@ -1,6 +1,8 @@
-import { pgTable, serial, integer } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text } from 'drizzle-orm/pg-core';
+import { nanoid } from 'nanoid';
 
-export const user = pgTable('user', {
-	id: serial('id').primaryKey(),
-	age: integer('age')
-});
+export const app = pgTable("apps", {
+	id: text("id").primaryKey().$default(() => `app_${nanoid(6)}`),
+	appName: text("app_name").notNull(),
+	apiKeyHash: text("api_key_hash").notNull(),
+})

@@ -4,7 +4,7 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import NavMenu from '$lib/components/nav-menu.svelte';
 
-	let { children } = $props();
+	let { children, data } = $props();
 </script>
 
 <svelte:head>
@@ -12,5 +12,5 @@
 </svelte:head>
 
 <ModeWatcher />
-<NavMenu />
+<NavMenu apps={data.apps} />
 {@render children?.()}
