@@ -92,31 +92,25 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		}
 	}
 
-	// Read request body once for audit logging (always check if body exists)
 	let requestBody: string | null = null;
 	try {
-		// Always attempt to read request body for audit logging, even for GET requests
 		const bodyText = await request.text();
 		if (bodyText && bodyText.trim() !== '') {
 			requestBody = bodyText;
 		}
 	} catch (error) {
-		// If we can't read the body, continue without it
 		console.warn('Could not read request body for audit logging:', error);
 	}
 
-	// Make the proxied request
 	const response = await fetch(targetUrl, {
 		method,
 		headers: proxyHeaders,
 		body: method !== 'GET' && method !== 'HEAD' ? requestBody : null,
 	});
 
-	// Clone the response so we can read it for audit logging while still returning it
 	const responseClone = response.clone();
 	let responseText: string | null = null;
 	try {
-		// Always read and store response body for audit logging, even for GET requests
 		responseText = await responseClone.text();
 	} catch (error) {
 		console.warn('Could not read response body for audit logging:', error);
@@ -127,7 +121,6 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		responseHeaders[key] = value;
 	});
 
-	// Filter sensitive headers from request headers for audit logging
 	const filteredRequestHeaders: Record<string, string> = {};
 	request.headers.forEach((value, key) => {
 		if (key.toLowerCase() === 'authorization') {
@@ -137,20 +130,18 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		}
 	});
 
-	// Insert audit log in parallel (don't await)
-	// Always store both request body (if provided) and response body (if available)
 	db.insert(auditLog).values({
 		appId: validApp.id,
 		method,
 		path: targetPath,
 		userIp,
 		requestHeaders: JSON.stringify(filteredRequestHeaders),
-		requestBody, // Always store request body if it was provided
+		requestBody,
 		responseStatus: response.status,
 		responseHeaders: JSON.stringify(responseHeaders),
-		responseBody: responseText, // Always store response body if available
+		responseBody: responseText,
 	}).catch(error => {
-		// Log the error but don't fail the request
+		// log the error, but don't fail the request
 		console.error('Failed to insert audit log:', error);
 	});
 
