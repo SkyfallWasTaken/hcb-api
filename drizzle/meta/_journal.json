@@ -15,6 +15,20 @@
       "when": 1758473221235,
       "tag": "0001_safe_famine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758479640955,
+      "tag": "0002_furry_shriek",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1758482693591,
+      "tag": "0003_jittery_inhumans",
+      "breakpoints": true
     }
   ]
 }

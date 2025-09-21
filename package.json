@@ -44,6 +44,7 @@
 		"prettier-plugin-tailwindcss": "^0.6.11",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
+		"sveltekit-flash-message": "^2.4.6",
 		"sveltekit-superforms": "^2.27.1",
 		"tailwind-merge": "^3.3.1",
 		"tailwind-variants": "^1.0.0",

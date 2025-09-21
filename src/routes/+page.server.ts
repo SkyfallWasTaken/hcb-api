@@ -1,6 +1,7 @@
-import { superValidate, message } from 'sveltekit-superforms';
+import { superValidate } from 'sveltekit-superforms';
 import { arktype } from 'sveltekit-superforms/adapters';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
+import { redirect } from 'sveltekit-flash-message/server';
 import { newAppSchema } from "$lib/home"
 import { db, app } from '$lib/server/db';
 import { genApiKey } from '$lib/utils';
@@ -11,7 +12,7 @@ export const load = async () => {
 };
 
 export const actions = {
-  default: async ({ request }) => {
+  default: async ({ request, cookies }) => {
     const form = await superValidate(request, arktype(newAppSchema));
     console.log(form);
 
@@ -22,6 +23,10 @@ export const actions = {
     const key = await genApiKey();
     const [newApp] = await db.insert(app).values({ appName: form.data.name, apiKeyHash: key.hash }).returning();
 
-    throw redirect(303, `/apps/${newApp.id}`);
+    redirect(`/apps/${newApp.id}`, {
+      type: 'success',
+      message: 'App created successfully!',
+      data: { apiKey: key.key }
+    }, cookies);
   }
 };
