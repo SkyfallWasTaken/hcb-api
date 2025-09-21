@@ -57,7 +57,7 @@ async function handleProxyRequest({ request, url }: RequestEvent) {
 	const authHeader = request.headers.get('Authorization');
 	const bearer = authHeader?.replace('Bearer ', '');
 	const method = request.method;
--
+
 	if (!bearer) {
 		return json({ error: 'Missing Authorization header' }, { status: 401 });
 	}
@@ -97,9 +97,5 @@ async function handleProxyRequest({ request, url }: RequestEvent) {
 		body: method !== 'GET' && method !== 'HEAD' ? request.body : null,
 	});
 
-	return new Response(await response.text(), {
-		status: response.status,
-		statusText: response.statusText,
-		headers: response.headers,
-	});
+	return response;
 }
