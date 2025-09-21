@@ -39,7 +39,7 @@ export const load: PageServerLoad = async (event) => {
 }
 
 export const actions: Actions = {
-  default: async ({ request, params, cookies }) => {
+  updatePermissions: async ({ request, params, cookies }) => {
     if (!params.id.startsWith("app_")) throw error(404, 'App not found');
 
     const form = await superValidate(request, arktype(appPermissionsSchema));

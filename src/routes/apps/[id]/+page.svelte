@@ -45,7 +45,7 @@
 	</div>
 </PageHeader>
 
-<form method="POST" use:enhance class="px-6 pb-8">
+<form method="POST" action="?/updatePermissions" use:enhance class="px-6 pb-8">
 	<input type="hidden" name="allowMoneyMovement" value={$form.allowMoneyMovement} />
 	<input type="hidden" name="allowCardAccess" value={$form.allowCardAccess} />
 
