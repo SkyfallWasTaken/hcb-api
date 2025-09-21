@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button, buttonVariants } from '$lib/components/ui/button';
-	import SuperDebug from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
 
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -46,7 +45,6 @@
 						{...$constraints.name}
 					/>
 				</div>
-				<SuperDebug data={form} />
 			</div>
 			<Dialog.Footer>
 				<Button type="submit" class="w-full" disabled={!isValid}>Create app</Button>

@@ -1,7 +1,13 @@
 <script lang="ts">
 	import PageHeader from '$lib/components/page-header.svelte';
 	import NewProjectDialog from '$lib/components/home/new-project-dialog.svelte';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
 
 	let { data } = $props();
 </script>
@@ -14,13 +20,15 @@
 	</svelte:fragment>
 
 	<div slot="actions">
-		<NewProjectDialog {data} />
+		{#if data.apps.length > 0}
+			<NewProjectDialog {data} />
+		{/if}
 	</div>
 </PageHeader>
 
-<div class="container mx-auto py-6">
+<div class="container px-6 py-6">
 	{#if data.apps && data.apps.length > 0}
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 			{#each data.apps as app}
 				<a href="/apps/{app.id}" class="block transition-transform hover:scale-105">
 					<Card class="h-full cursor-pointer hover:shadow-lg">
@@ -40,11 +48,9 @@
 			{/each}
 		</div>
 	{:else}
-		<div class="text-center py-12">
-			<h3 class="text-lg font-semibold mb-2">No applications yet</h3>
-			<p class="text-muted-foreground mb-4">
-				Create your first application to get started.
-			</p>
+		<div class="py-12 text-center">
+			<h3 class="mb-2 text-lg font-semibold">No applications yet</h3>
+			<p class="mb-4 text-muted-foreground">Create your first application to get started.</p>
 			<NewProjectDialog {data} />
 		</div>
 	{/if}

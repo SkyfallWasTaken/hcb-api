@@ -4,7 +4,9 @@ import { error, fail } from "@sveltejs/kit"
 import { redirect } from 'sveltekit-flash-message/server';
 import { superValidate } from 'sveltekit-superforms';
 import { arktype } from 'sveltekit-superforms/adapters';
-import { appPermissionsSchema, deleteAppSchema } from "$lib/home"
+import { appPermissionsSchema, deleteAppSchema, regenerateApiKeySchema } from "$lib/home"
+import { genApiKey } from '$lib/utils';
+
 import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async (event) => {
@@ -25,6 +27,7 @@ export const load: PageServerLoad = async (event) => {
   }, arktype(appPermissionsSchema));
 
   const deleteForm = await superValidate({ confirm: '' }, arktype(deleteAppSchema));
+  const regenerateForm = await superValidate({ confirm: '' }, arktype(regenerateApiKeySchema));
 
   return {
     app: {
@@ -35,6 +38,7 @@ export const load: PageServerLoad = async (event) => {
     },
     form,
     deleteForm,
+    regenerateForm,
   }
 }
 
@@ -75,6 +79,27 @@ export const actions: Actions = {
     redirect('/', {
       type: 'success',
       message: 'Application deleted successfully!'
+    }, cookies);
+  },
+
+  regenerateApiKey: async ({ request, params, cookies }) => {
+    if (!params.id.startsWith("app_")) throw error(404, 'App not found');
+
+    const regenerateForm = await superValidate(request, arktype(regenerateApiKeySchema));
+
+    if (!regenerateForm.valid) {
+      return fail(400, { regenerateForm });
+    }
+
+    const key = await genApiKey();
+    await db.update(app)
+      .set({ apiKeyHash: key.hash })
+      .where(eq(app.id, params.id));
+
+    throw redirect(303, `/apps/${params.id}`, {
+      type: 'success',
+      message: 'API key regenerated successfully!',
+      data: { apiKey: key.key }
     }, cookies);
   }
 }

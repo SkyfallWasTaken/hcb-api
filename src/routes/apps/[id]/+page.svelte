@@ -18,6 +18,7 @@
 	import { arktype } from 'sveltekit-superforms/adapters';
 	import { appPermissionsSchema } from '$lib/home';
 	import DeleteAppDialog from '$lib/components/apps/delete-app-dialog.svelte';
+	import RegenerateApiKeyDialog from '$lib/components/apps/regenerate-api-key-dialog.svelte';
 
 	const { app, form: formData, flash } = page.data;
 	let copied = $state(false);
@@ -33,14 +34,15 @@
 	}
 
 	const { form, enhance, submitting, tainted } = superForm(formData, {
-		validators: arktype(appPermissionsSchema)
+		validators: arktype(appPermissionsSchema),
 	});
 </script>
 
 <PageHeader>
 	<svelte:fragment slot="title">{app.name}</svelte:fragment>
 
-	<div slot="actions">
+	<div slot="actions" class="flex gap-2">
+		<RegenerateApiKeyDialog {app} data={page.data} />
 		<DeleteAppDialog {app} data={page.data} />
 	</div>
 </PageHeader>

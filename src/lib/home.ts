@@ -12,3 +12,7 @@ export const appPermissionsSchema = type({
 export const deleteAppSchema = type({
   confirm: type("'DELETE'")
 });
+
+export const regenerateApiKeySchema = type({
+  confirm: type("'REGENERATE'")
+});
