@@ -2,13 +2,7 @@
 	import { page } from '$app/state';
 	import PageHeader from '$lib/components/page-header.svelte';
 	import { Button } from '$lib/components/ui/button';
-	import {
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle
-	} from '$lib/components/ui/card';
+	import * as Accordion from '$lib/components/ui/accordion';
 	import CodeBlock from '$lib/components/code-block.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
@@ -51,17 +45,15 @@
 
 <div class="px-6 pb-8">
 	{#if logs.length === 0}
-		<Card>
-			<CardContent class="pt-6">
-				<p class="text-center text-muted-foreground">No API requests logged yet.</p>
-			</CardContent>
-		</Card>
+		<div class="rounded-md border bg-card p-6">
+			<p class="text-center text-muted-foreground">No API requests logged yet.</p>
+		</div>
 	{:else}
-		<div class="space-y-6">
-			{#each logs as log}
-				<Card>
-					<CardHeader class="pb-3">
-						<div class="flex items-center justify-between">
+		<Accordion.Root type="multiple" class="space-y-4">
+			{#each logs as log, i}
+				<Accordion.Item value="log-{i}" class="border rounded-lg">
+					<Accordion.Trigger class="px-4 py-3">
+						<div class="flex items-center justify-between w-full">
 							<div class="flex items-center gap-2">
 								<Badge class={getMethodColor(log.method)}>{log.method}</Badge>
 								<code class="text-sm font-mono bg-muted px-2 py-1 rounded">{log.path}</code>
@@ -71,11 +63,11 @@
 								<span class="text-sm text-muted-foreground">{formatTimestamp(log.timestamp)}</span>
 							</div>
 						</div>
-						<div class="text-sm text-muted-foreground">
-							IP: <code>{log.userIp}</code>
+						<div class="text-sm text-muted-foreground text-left mt-1 flex flex-row gap-1 items-center">
+							<code>{log.userIp}</code>
 						</div>
-					</CardHeader>
-					<CardContent class="space-y-4">
+					</Accordion.Trigger>
+					<Accordion.Content class="px-4 pb-4 space-y-4">
 						<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 							<div>
 								<h4 class="text-sm font-semibold mb-2">Request Headers</h4>
@@ -100,9 +92,9 @@
 								<CodeBlock code={log.responseBody} />
 							</div>
 						{/if}
-					</CardContent>
-				</Card>
+					</Accordion.Content>
+				</Accordion.Item>
 			{/each}
-		</div>
+		</Accordion.Root>
 	{/if}
 </div>

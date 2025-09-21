@@ -127,6 +127,16 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		responseHeaders[key] = value;
 	});
 
+	// Filter sensitive headers from request headers for audit logging
+	const filteredRequestHeaders: Record<string, string> = {};
+	request.headers.forEach((value, key) => {
+		if (key.toLowerCase() === 'authorization') {
+			filteredRequestHeaders[key] = '[FILTERED]';
+		} else {
+			filteredRequestHeaders[key] = value;
+		}
+	});
+
 	// Insert audit log in parallel (don't await)
 	// Always store both request body (if provided) and response body (if available)
 	db.insert(auditLog).values({
@@ -134,7 +144,7 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		method,
 		path: targetPath,
 		userIp,
-		requestHeaders: JSON.stringify(Object.fromEntries(request.headers)),
+		requestHeaders: JSON.stringify(filteredRequestHeaders),
 		requestBody, // Always store request body if it was provided
 		responseStatus: response.status,
 		responseHeaders: JSON.stringify(responseHeaders),
