@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-	<title>OAuth Setup Wizard</title>
+	<title>OAuth Setup hs</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl py-8">
