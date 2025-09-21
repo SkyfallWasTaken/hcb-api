@@ -31,7 +31,7 @@ export async function exchangeCodeForTokens(code: string, clientId: string): Pro
   return TokenResponse.assert(json);
 }
 
-export async function useRefreshToken(token: string, clientId: string): Promise<TokenResponse> {
+async function useRefreshToken(token: string, clientId: string): Promise<TokenResponse> {
   const params = new URLSearchParams();
   params.append("grant_type", "refresh_token");
   params.append("refresh_token", token);
@@ -47,7 +47,7 @@ export async function useRefreshToken(token: string, clientId: string): Promise<
   return TokenResponse.assert(json);
 }
 
-export async function isTokenResponseStillValid(tokenResponse: TokenResponse): Promise<boolean> {
+async function isTokenResponseStillValid(tokenResponse: TokenResponse): Promise<boolean> {
   return (Date.now() / 1000) < tokenResponse.expires_at;
 }
 

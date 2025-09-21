@@ -1,38 +1,75 @@
-# sv
+(hi SOM review! I added a video as the demo as making it public would require me to expose my entire HCB account! got perms for this in #ask-the-shipwrights)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+# HCB API proxy
 
-## Creating a project
+A super easy way to use the [HCB v4 API](https://hcb-developers.anscg.net/api-reference/), even if you are not a member of HQ. Normally, you'd have to get a member of the HCB engineering team to create an OAuth app for you, but OAuth apps are HQ-only and can be annoying to use.
 
-If you're seeing this, you've probably already done this step. Congrats!
+HCB-API handles things like token refreshes and code exchanges for you, so you don't have to worry about things like access tokens expiring. In other words, HCB-API makes v4 authentication much simpler.
 
-```sh
-# create a new project in the current directory
-npx sv create
+Once it's set up, it's very similar to using the standard v4 API, except you simply use the HCB-API domain instead of `hcb.hackclub.com`. For example, if you want to use the `https://hcb.hackclub.com/api/v4/user/card_grants` endpoint, do something like this:
 
-# create a new project in my-app
-npx sv create my-app
+```bash
+curl https://your_hcb_api_domain.com/api/v4/user/card_grants \
+  --header 'Authorization: Bearer YOUR_API_KEY'
 ```
 
-## Developing
+> [!WARNING]
+> **Important: your responsibilities when using HCB-API**
+>
+> Please read this text carefully in order to understand what you are getting into.
+>
+> HCB-API is unofficial software, and HCB's v4 API itself is still in development.
+>
+> If you encounter issues with the API, **please signpost that you are using HCB-API** (and thus using HCB Mobile's OAuth app) if you do decide to try and get support from the HCB team. You are more likely to get support if you open an issue on this repository or send me a message on Slack.
+>
+> Please ensure you have robust monitoring and error handling when using the API (this goes for the official API too!) to ensure you do not lose money, especially if you are performing money movement (by e.g. issuing grants). This software is provided as-is, without any warranties. The authors aren’t responsible for any issues, damages, or claims that may arise from its use. As such, it's your job to know what you're doing.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+With that out of the way, let's get started!
 
-```sh
-npm run dev
+## Initial setup
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+This will take about 10-15 minutes.
+
+First, install dependencies:
+
+```bash
+bun install
 ```
 
-## Building
+Fill in the `.env`:
 
-To create a production version of your app:
-
-```sh
-npm run build
+```
+HCB_CLIENT_ID="yt8JHmPDmmYYLUmoEiGtocYwg5fSOGCrcIY3G-vkMRs" # HCB Mobile
+DATABASE_URL=<postgres database URL>
+NODE_ENV=production
 ```
 
-You can preview the production build with `npm run preview`.
+To run:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```bash
+bun .
+```
+
+Visit `localhost:5173` (or whatever the domain is).
+
+Then, click the "Set up OAuth" button to connect HCB-API with your HCB account.
+
+![Wizard](.github/wizard.png)
+
+The dashboard should hopefully look like this:
+
+![UI](.github/dashboard.png)
+
+Then, create a new application and copy the API key. You're now done! (see above for instructions.)
+
+If you want to send grants or view card information, toggle the "Enable money movement" or "Enable accessing cards" settings.
+
+## Audit logs
+
+HCB-API has audit logs, which allows you to see what's happening with your account.
+
+![Audit logs](.github/audit.png)
+
+## API Docs
+
+Unofficial API docs are available [here.](https://hcb-developers.anscg.net/api-reference/) For the most up to date information, it's best to read the HCB codebase (using AI agents for this can be very helpful, but as the scare text says above, it's your job to know what you're doing is correct.)

@@ -1,11 +1,12 @@
 import { json } from '@sveltejs/kit';
-import { verifyApiKey } from '$lib/server/auth';
 import { getValidTokenResponse } from '$lib/server/oauth';
 import { db } from '$lib/server/db/index';
 import { app, auditLog } from '$lib/server/db/schema';
 import { env } from '$env/dynamic/private';
 import micromatch from 'micromatch';
 import type { RequestEvent } from './$types';
+import { eq } from 'drizzle-orm';
+import { sha256 } from '$lib/utils';
 
 const moneyMovementRoutes = [
 	'POST /organizations/*/grants',
@@ -63,8 +64,7 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		return json({ error: 'Missing Authorization header' }, { status: 401 });
 	}
 
-	const apps = await db.select().from(app);
-	const validApp = apps.find(a => verifyApiKey(bearer, a.apiKeyHash));
+	const [validApp] = await db.select().from(app).where(eq(app.apiKeyHash, await sha256(bearer)));
 
 	if (!validApp) {
 		return json({ error: 'Invalid API key' }, { status: 401 });

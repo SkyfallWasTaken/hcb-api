@@ -15,11 +15,14 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?:
 
 export async function genApiKey() {
 	const key = `hcbapi_${nanoid(32)}`;
-	const hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(key));
-	const hashArray = Array.from(new Uint8Array(hashBuffer));
-	const hash = Buffer.from(hashArray).toString('hex');
 	return {
 		key,
-		hash,
+		hash: await sha256(key),
 	};
+}
+
+export async function sha256(input: string): Promise<string> {
+	const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	return Buffer.from(hashArray).toString('hex');
 }

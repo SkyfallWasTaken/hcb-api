@@ -42,5 +42,7 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV PORT=3000
 
+CMD ["bun", "run", "db:migrate"]
+
 # Start the application using Bun
 CMD ["bun", "run", "build/index.js"]

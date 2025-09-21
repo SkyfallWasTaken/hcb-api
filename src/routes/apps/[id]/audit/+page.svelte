@@ -37,7 +37,7 @@
 
 	<div slot="actions">
 		<Button variant="outline" href="/apps/{app.id}">
-			<ArrowLeft class="h-4 w-4 mr-2" />
+			<ArrowLeft />
 			Back to App
 		</Button>
 	</div>

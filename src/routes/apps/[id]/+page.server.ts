@@ -26,7 +26,9 @@ export const load: PageServerLoad = async (event) => {
     allowCardAccess: selectedApp.allowCardAccess
   }, arktype(appPermissionsSchema));
 
+  // @ts-expect-error
   const deleteForm = await superValidate({ confirm: '' }, arktype(deleteAppSchema));
+  // @ts-expect-error
   const regenerateForm = await superValidate({ confirm: '' }, arktype(regenerateApiKeySchema));
 
   return {

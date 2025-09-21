@@ -49,7 +49,7 @@
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<Button class="w-full md:w-auto" href={authUrl}>Open HCB authorization page →</Button>
+				<Button class="w-full md:w-auto" href={authUrl} target="_blank">Open HCB authorization page →</Button>
 			</CardContent>
 		</Card>
 

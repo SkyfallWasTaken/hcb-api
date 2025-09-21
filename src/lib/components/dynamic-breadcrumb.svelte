@@ -16,7 +16,7 @@
 
 	const routeLabels: Record<string, string> = {
 		'': 'Home',
-		'audit-logs': 'Audit Logs',
+		'audit': 'Audit Logs',
 		'settings': 'Settings',
 		'dashboard': 'Dashboard'
 	};
