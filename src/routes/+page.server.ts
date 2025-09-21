@@ -5,10 +5,23 @@ import { redirect } from 'sveltekit-flash-message/server';
 import { newAppSchema } from "$lib/home"
 import { db, app } from '$lib/server/db';
 import { genApiKey } from '$lib/utils';
+import { getStoredTokenResponse } from '$lib/server/oauth';
+import { env } from '$env/dynamic/private';
 
 export const load = async () => {
   const form = await superValidate(arktype(newAppSchema));
-  return { form };
+
+  // Check if OAuth tokens exist
+  let hasOAuthTokens = false;
+  if (env.HCB_CLIENT_ID) {
+    const storedToken = await getStoredTokenResponse(env.HCB_CLIENT_ID);
+    hasOAuthTokens = !!storedToken;
+  }
+
+  return {
+    form,
+    hasOAuthTokens
+  };
 };
 
 export const actions = {
