@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { exchangeCodeForTokens, storeTokenResponse } from '$lib/server/oauth.js';
+import { exchangeCodeForTokens, storeTokenResponse } from '$lib/server/oauth';
 import { env } from '$env/dynamic/private';
 
 export const load = async () => {

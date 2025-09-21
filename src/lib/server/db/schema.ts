@@ -19,3 +19,17 @@ export const oauthToken = pgTable("oauth_tokens", {
 	expiresAt: integer("expires_at").notNull(),
 	updatedAt: timestamp("updated_at").defaultNow().notNull(),
 })
+
+export const auditLog = pgTable("audit_logs", {
+	id: text("id").primaryKey().$default(() => `log_${nanoid(8)}`),
+	appId: text("app_id").notNull().references(() => app.id, { onDelete: 'cascade' }),
+	method: text("method").notNull(),
+	path: text("path").notNull(),
+	userIp: text("user_ip").notNull(),
+	requestHeaders: text("request_headers").notNull(),
+	requestBody: text("request_body"),
+	responseStatus: integer("response_status").notNull(),
+	responseHeaders: text("response_headers").notNull(),
+	responseBody: text("response_body"),
+	timestamp: timestamp("timestamp").defaultNow().notNull(),
+})

@@ -42,6 +42,7 @@
 	<svelte:fragment slot="title">{app.name}</svelte:fragment>
 
 	<div slot="actions" class="flex gap-2">
+		<Button variant="outline" href="/apps/{app.id}/audit">View Audit Logs</Button>
 		<RegenerateApiKeyDialog {app} data={page.data} />
 		<DeleteAppDialog {app} data={page.data} />
 	</div>

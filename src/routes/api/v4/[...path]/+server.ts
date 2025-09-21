@@ -1,8 +1,8 @@
 import { json } from '@sveltejs/kit';
-import { verifyApiKey } from '$lib/server/auth.js';
-import { getValidTokenResponse } from '$lib/server/oauth.js';
-import { db } from '$lib/server/db/index.js';
-import { app } from '$lib/server/db/schema.js';
+import { verifyApiKey } from '$lib/server/auth';
+import { getValidTokenResponse } from '$lib/server/oauth';
+import { db } from '$lib/server/db/index';
+import { app, auditLog } from '$lib/server/db/schema';
 import { env } from '$env/dynamic/private';
 import micromatch from 'micromatch';
 import type { RequestEvent } from './$types';
@@ -53,10 +53,11 @@ export const PUT = handleProxyRequest;
 export const DELETE = handleProxyRequest;
 export const PATCH = handleProxyRequest;
 
-async function handleProxyRequest({ request, url }: RequestEvent) {
+async function handleProxyRequest({ request, url, getClientAddress }: RequestEvent) {
 	const authHeader = request.headers.get('Authorization');
 	const bearer = authHeader?.replace('Bearer ', '');
 	const method = request.method;
+	const userIp = getClientAddress();
 
 	if (!bearer) {
 		return json({ error: 'Missing Authorization header' }, { status: 401 });
@@ -91,10 +92,56 @@ async function handleProxyRequest({ request, url }: RequestEvent) {
 		}
 	}
 
+	// Read request body once for audit logging (always check if body exists)
+	let requestBody: string | null = null;
+	try {
+		// Always attempt to read request body for audit logging, even for GET requests
+		const bodyText = await request.text();
+		if (bodyText && bodyText.trim() !== '') {
+			requestBody = bodyText;
+		}
+	} catch (error) {
+		// If we can't read the body, continue without it
+		console.warn('Could not read request body for audit logging:', error);
+	}
+
+	// Make the proxied request
 	const response = await fetch(targetUrl, {
 		method,
 		headers: proxyHeaders,
-		body: method !== 'GET' && method !== 'HEAD' ? request.body : null,
+		body: method !== 'GET' && method !== 'HEAD' ? requestBody : null,
+	});
+
+	// Clone the response so we can read it for audit logging while still returning it
+	const responseClone = response.clone();
+	let responseText: string | null = null;
+	try {
+		// Always read and store response body for audit logging, even for GET requests
+		responseText = await responseClone.text();
+	} catch (error) {
+		console.warn('Could not read response body for audit logging:', error);
+	}
+
+	const responseHeaders: Record<string, string> = {};
+	response.headers.forEach((value, key) => {
+		responseHeaders[key] = value;
+	});
+
+	// Insert audit log in parallel (don't await)
+	// Always store both request body (if provided) and response body (if available)
+	db.insert(auditLog).values({
+		appId: validApp.id,
+		method,
+		path: targetPath,
+		userIp,
+		requestHeaders: JSON.stringify(Object.fromEntries(request.headers)),
+		requestBody, // Always store request body if it was provided
+		responseStatus: response.status,
+		responseHeaders: JSON.stringify(responseHeaders),
+		responseBody: responseText, // Always store response body if available
+	}).catch(error => {
+		// Log the error but don't fail the request
+		console.error('Failed to insert audit log:', error);
 	});
 
 	return response;

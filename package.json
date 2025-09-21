@@ -60,6 +60,7 @@
 		"micromatch": "^4.0.8",
 		"mode-watcher": "^1.1.0",
 		"nanoid": "^5.1.5",
-		"postgres": "^3.4.5"
+		"postgres": "^3.4.5",
+		"shiki": "^3.13.0"
 	}
 }
