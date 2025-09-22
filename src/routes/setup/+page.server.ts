@@ -31,7 +31,9 @@ export const actions: Actions = {
 		const validation = validateSetupForm(form.data);
 		if (validation.problems) {
 			// Add the custom validation error
-			form.errors.confirmPassword = validation.problems.find(p => p.path[0] === 'confirmPassword')?.message;
+			form.errors.confirmPassword = validation.problems.find(
+				(p) => p.path[0] === 'confirmPassword'
+			)?.message;
 			return fail(400, { form });
 		}
 

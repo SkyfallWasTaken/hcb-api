@@ -14,19 +14,21 @@ export const loginSchema = type({
 // Custom validation for setup form to check password confirmation
 export const validateSetupForm = (data: { password: string; confirmPassword: string }) => {
 	const baseValidation = setupSchema(data);
-	
+
 	if (!baseValidation.problems) {
 		// Check if passwords match
 		if (data.password !== data.confirmPassword) {
 			return {
-				problems: [{
-					path: ['confirmPassword'],
-					message: 'Passwords do not match'
-				}],
+				problems: [
+					{
+						path: ['confirmPassword'],
+						message: 'Passwords do not match'
+					}
+				],
 				data: undefined
 			};
 		}
 	}
-	
+
 	return baseValidation;
 };
