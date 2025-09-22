@@ -15,6 +15,4 @@
 		<DynamicBreadcrumb {apps} />
 		<ThemeSwitcher />
 	</div>
-
-
 </div>

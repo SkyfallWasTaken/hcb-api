@@ -14,7 +14,7 @@
 				const formatted = language === 'json' ? JSON.stringify(JSON.parse(code), null, 2) : code;
 				highlightedCode = await codeToHtml(formatted, {
 					lang: language,
-					theme: theme,
+					theme: theme
 				});
 			}
 		} catch (e) {
@@ -23,11 +23,11 @@
 	});
 </script>
 
-<div class="rounded-md border bg-card overflow-hidden">
+<div class="overflow-hidden rounded-md border bg-card">
 	{#if highlightedCode}
 		{@html highlightedCode}
 	{:else}
-		<pre class="p-4 text-sm overflow-x-auto"><code>{code}</code></pre>
+		<pre class="overflow-x-auto p-4 text-sm"><code>{code}</code></pre>
 	{/if}
 </div>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import * as Breadcrumb from "$lib/components/ui/breadcrumb";
-	import { page } from "$app/state";
-	import { goto } from "$app/navigation";
+	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 
 	interface App {
 		id: string;
@@ -16,9 +16,9 @@
 
 	const routeLabels: Record<string, string> = {
 		'': 'Home',
-		'audit': 'Audit Logs',
-		'settings': 'Settings',
-		'dashboard': 'Dashboard'
+		audit: 'Audit Logs',
+		settings: 'Settings',
+		dashboard: 'Dashboard'
 	};
 
 	let { apps = [] }: { apps?: App[] } = $props();
@@ -36,9 +36,7 @@
 	const breadcrumbs = $derived(buildBreadcrumbs(segments));
 
 	function buildBreadcrumbs(segments: string[]): BreadcrumbItem[] {
-		const crumbs: BreadcrumbItem[] = [
-			{ label: 'Home', href: '/', isPage: false }
-		];
+		const crumbs: BreadcrumbItem[] = [{ label: 'Home', href: '/', isPage: false }];
 
 		let currentPath = '';
 
@@ -54,9 +52,10 @@
 			} else if (routeLabels[segment]) {
 				label = routeLabels[segment];
 			} else {
-				label = segment.split('-').map((word: string) =>
-					word.charAt(0).toUpperCase() + word.slice(1)
-				).join(' ');
+				label = segment
+					.split('-')
+					.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+					.join(' ');
 			}
 
 			// Redirect /apps to / instead
@@ -82,9 +81,7 @@
 				{#if crumb.isPage}
 					<Breadcrumb.Page>{crumb.label}</Breadcrumb.Page>
 				{:else}
-					<Breadcrumb.Link
-						href={crumb.href}
-					>
+					<Breadcrumb.Link href={crumb.href}>
 						{crumb.label}
 					</Breadcrumb.Link>
 				{/if}

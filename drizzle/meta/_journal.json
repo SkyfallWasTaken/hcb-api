@@ -1,54 +1,12 @@
 {
   "version": "7",
-  "dialect": "postgresql",
+  "dialect": "sqlite",
   "entries": [
     {
       "idx": 0,
-      "version": "7",
-      "when": 1758472253413,
-      "tag": "0000_luxuriant_shaman",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1758473221235,
-      "tag": "0001_safe_famine",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1758479640955,
-      "tag": "0002_furry_shriek",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1758482693591,
-      "tag": "0003_jittery_inhumans",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1758490055110,
-      "tag": "0004_awesome_betty_brant",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1758493726567,
-      "tag": "0005_volatile_nocturne",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1758495398960,
-      "tag": "0006_massive_william_stryker",
+      "version": "6",
+      "when": 1758535720041,
+      "tag": "0000_illegal_vivisector",
       "breakpoints": true
     }
   ]

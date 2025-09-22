@@ -12,7 +12,6 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"db:start": "docker compose up",
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
@@ -29,6 +28,7 @@
 		"@tailwindcss/forms": "^0.5.9",
 		"@tailwindcss/typography": "^0.5.15",
 		"@tailwindcss/vite": "^4.0.0",
+		"@types/better-sqlite3": "^7.6.11",
 		"@types/micromatch": "^4.0.9",
 		"@types/node": "^22",
 		"arktype": "^2.1.22",
@@ -57,10 +57,10 @@
 		"vite-plugin-devtools-json": "^1.0.0"
 	},
 	"dependencies": {
+		"better-sqlite3": "^11.3.0",
 		"micromatch": "^4.0.8",
 		"mode-watcher": "^1.1.0",
 		"nanoid": "^5.1.5",
-		"postgres": "^3.4.5",
 		"shiki": "^3.13.0"
 	}
 }

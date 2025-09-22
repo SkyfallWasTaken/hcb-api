@@ -34,7 +34,7 @@
 	}
 
 	const { form, enhance, submitting, tainted } = superForm(formData, {
-		validators: arktype(appPermissionsSchema),
+		validators: arktype(appPermissionsSchema)
 	});
 </script>
 
@@ -63,11 +63,7 @@
 			<CardContent>
 				<div class="flex items-center gap-2">
 					<Input value={flash.data.apiKey} readonly class="bg-white font-mono text-sm" />
-					<Button
-						variant="outline"
-						size="sm"
-						onclick={() => copyApiKey(flash.data.apiKey)}
-					>
+					<Button variant="outline" size="sm" onclick={() => copyApiKey(flash.data.apiKey)}>
 						{#if copied}
 							<CheckCircle class="h-4 w-4" />
 							Copied!

@@ -15,7 +15,7 @@
 	let dialogOpen = $state(false);
 
 	let { form, enhance, constraints, validateForm, allErrors } = superForm(data.deleteForm, {
-		validators: arktype(deleteAppSchema),
+		validators: arktype(deleteAppSchema)
 	});
 
 	$effect(() => void validateForm({ update: true }));
@@ -23,14 +23,17 @@
 </script>
 
 <Dialog.Root bind:open={dialogOpen}>
-	<Dialog.Trigger class="{buttonVariants({ variant: 'outline' })} text-destructive hover:text-destructive/90">
+	<Dialog.Trigger
+		class="{buttonVariants({ variant: 'outline' })} text-destructive hover:text-destructive/90"
+	>
 		<Trash /> Delete app
 	</Dialog.Trigger>
 	<Dialog.Content class="sm:max-w-[425px]">
 		<Dialog.Header>
 			<Dialog.Title>Delete application</Dialog.Title>
 			<Dialog.Description>
-				This action cannot be undone. This will permanently delete the application "{app.name}" and its API key will stop working.
+				This action cannot be undone. This will permanently delete the application "{app.name}" and
+				its API key will stop working.
 			</Dialog.Description>
 		</Dialog.Header>
 		<form method="POST" action="?/delete" use:enhance>
@@ -48,7 +51,7 @@
 				</div>
 			</div>
 			<Dialog.Footer>
-				<Button variant="outline" type="button" onclick={() => dialogOpen = false}>Cancel</Button>
+				<Button variant="outline" type="button" onclick={() => (dialogOpen = false)}>Cancel</Button>
 				<Button type="submit" variant="destructive" disabled={!isValid}>Delete app</Button>
 			</Dialog.Footer>
 		</form>

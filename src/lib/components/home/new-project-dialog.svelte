@@ -16,7 +16,7 @@
 	let dialogOpen = $state(false);
 
 	let { form, enhance, constraints, validateForm, allErrors } = superForm(data.form, {
-		validators: arktype(newAppSchema),
+		validators: arktype(newAppSchema)
 	});
 
 	$effect(() => void validateForm({ update: true }));

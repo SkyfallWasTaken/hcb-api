@@ -64,7 +64,10 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		return json({ error: 'Missing Authorization header' }, { status: 401 });
 	}
 
-	const [validApp] = await db.select().from(app).where(eq(app.apiKeyHash, await sha256(bearer)));
+	const [validApp] = await db
+		.select()
+		.from(app)
+		.where(eq(app.apiKeyHash, await sha256(bearer)));
 
 	if (!validApp) {
 		return json({ error: 'Invalid API key' }, { status: 401 });
@@ -73,7 +76,10 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	const targetPath = url.pathname.replace('/api/v4', '');
 	const permissionCheck = checkPermissions(method, targetPath, validApp);
 	if (!permissionCheck.allowed) {
-		return json({ error: 'Insufficient permissions', required: permissionCheck.required }, { status: 403 });
+		return json(
+			{ error: 'Insufficient permissions', required: permissionCheck.required },
+			{ status: 403 }
+		);
 	}
 
 	if (!env.HCB_CLIENT_ID) {
@@ -105,7 +111,7 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	const response = await fetch(targetUrl, {
 		method,
 		headers: proxyHeaders,
-		body: method !== 'GET' && method !== 'HEAD' ? requestBody : null,
+		body: method !== 'GET' && method !== 'HEAD' ? requestBody : null
 	});
 
 	const responseClone = response.clone();
@@ -130,20 +136,22 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		}
 	});
 
-	db.insert(auditLog).values({
-		appId: validApp.id,
-		method,
-		path: targetPath,
-		userIp,
-		requestHeaders: JSON.stringify(filteredRequestHeaders),
-		requestBody,
-		responseStatus: response.status,
-		responseHeaders: JSON.stringify(responseHeaders),
-		responseBody: responseText,
-	}).catch(error => {
-		// log the error, but don't fail the request
-		console.error('Failed to insert audit log:', error);
-	});
+	db.insert(auditLog)
+		.values({
+			appId: validApp.id,
+			method,
+			path: targetPath,
+			userIp,
+			requestHeaders: JSON.stringify(filteredRequestHeaders),
+			requestBody,
+			responseStatus: response.status,
+			responseHeaders: JSON.stringify(responseHeaders),
+			responseBody: responseText
+		})
+		.catch((error) => {
+			// log the error, but don't fail the request
+			console.error('Failed to insert audit log:', error);
+		});
 
 	return response;
 }
