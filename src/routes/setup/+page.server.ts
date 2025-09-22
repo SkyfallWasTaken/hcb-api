@@ -10,7 +10,6 @@ export const load: PageServerLoad = async () => {
 		throw redirect(302, '/');
 	}
 
-	// Initialize the form
 	const form = await superValidate(arktype(setupSchema));
 	return { form };
 };
@@ -27,13 +26,8 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		// Additional validation for password confirmation
 		const validation = validateSetupForm(form.data);
-		if (validation.problems) {
-			// Add the custom validation error
-			form.errors.confirmPassword = validation.problems.find(
-				(p) => p.path[0] === 'confirmPassword'
-			)?.message;
+		if ("problems" in validation) {
 			return fail(400, { form });
 		}
 

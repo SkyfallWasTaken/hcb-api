@@ -48,7 +48,6 @@ export async function verifyPassword(password: string): Promise<string | null> {
 
 	let { jwtSecret } = config[0];
 
-	// Generate JWT secret if it doesn't exist (for existing records)
 	if (!jwtSecret) {
 		jwtSecret = nanoid(64);
 		await db

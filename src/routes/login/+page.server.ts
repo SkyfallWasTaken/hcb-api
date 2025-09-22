@@ -10,7 +10,6 @@ export const load: PageServerLoad = async () => {
 		throw redirect(302, '/setup');
 	}
 
-	// Initialize the form
 	const form = await superValidate(arktype(loginSchema));
 	return { form };
 };
@@ -26,7 +25,6 @@ export const actions: Actions = {
 		const token = await verifyPassword(form.data.password);
 
 		if (!token) {
-			// Set a custom error for invalid password
 			form.errors.password = ['Invalid password'];
 			return fail(400, { form });
 		}
