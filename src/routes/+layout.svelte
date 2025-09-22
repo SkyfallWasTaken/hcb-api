@@ -12,5 +12,11 @@
 </svelte:head>
 
 <ModeWatcher />
-<NavMenu apps={data.apps} />
-{@render children?.()}
+<div class="min-h-screen">
+	{#if data.hasPassword && data.isAuthenticated}
+		<NavMenu apps={data.apps} isAuthenticated={data.isAuthenticated} />
+	{:else}
+		<NavMenu apps={[]} isAuthenticated={false} />
+	{/if}
+	{@render children?.()}
+</div>

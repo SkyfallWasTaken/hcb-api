@@ -1,0 +1,1 @@
+ALTER TABLE `auth_config` ADD `jwt_secret` text NOT NULL;

@@ -34,6 +34,20 @@ export const oauthToken = sqliteTable(
 	]
 );
 
+export const authConfig = sqliteTable('auth_config', {
+	id: text('id')
+		.primaryKey()
+		.$default(() => `config_${nanoid(6)}`),
+	passwordHash: text('password_hash').notNull(),
+	jwtSecret: text('jwt_secret'),
+	createdAt: text('created_at')
+		.default(sql`(CURRENT_TIMESTAMP)`)
+		.notNull(),
+	updatedAt: text('updated_at')
+		.default(sql`(CURRENT_TIMESTAMP)`)
+		.notNull()
+});
+
 export const auditLog = sqliteTable(
 	'audit_logs',
 	{

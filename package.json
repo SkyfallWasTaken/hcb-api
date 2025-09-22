@@ -57,7 +57,11 @@
 		"vite-plugin-devtools-json": "^1.0.0"
 	},
 	"dependencies": {
+		"@types/bcryptjs": "^2.4.6",
+		"@types/jsonwebtoken": "^9.0.10",
+		"bcryptjs": "^3.0.2",
 		"better-sqlite3": "^11.3.0",
+		"jsonwebtoken": "^9.0.2",
 		"micromatch": "^4.0.8",
 		"mode-watcher": "^1.1.0",
 		"nanoid": "^5.1.5",

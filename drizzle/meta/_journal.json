@@ -8,6 +8,20 @@
       "when": 1758535720041,
       "tag": "0000_illegal_vivisector",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1758544812977,
+      "tag": "0001_unusual_ben_urich",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1758549500691,
+      "tag": "0002_tense_shaman",
+      "breakpoints": true
     }
   ]
 }
