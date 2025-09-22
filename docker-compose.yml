@@ -1,14 +1,14 @@
 services:
-  db:
-    image: postgres
-    restart: always
+  app:
+    build: .
     ports:
-      - 5432:5432
+      - '3000:3000'
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: local
+      - NODE_ENV=production
+      - DATABASE_URL=/app/data/database.db
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./data:/app/data
+    restart: unless-stopped
+
 volumes:
-  pgdata:
+  data:

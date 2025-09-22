@@ -42,7 +42,8 @@ EXPOSE 3000
 ENV NODE_ENV=production
 ENV PORT=3000
 
-CMD ["bun", "run", "db:migrate"]
+# Create data directory for SQLite database
+RUN mkdir -p /app/data && chown sveltekit:bun /app/data
 
-# Start the application using Bun
-CMD ["bun", "run", "build/index.js"]
+# Start the application using Bun (run migrations then start server)
+CMD ["sh", "-c", "bun run db:migrate && bun build/index.js"]
