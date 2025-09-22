@@ -29,6 +29,7 @@
 		"@tailwindcss/typography": "^0.5.15",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/better-sqlite3": "^7.6.13",
+		"@types/bun": "^1.2.22",
 		"@types/micromatch": "^4.0.9",
 		"@types/node": "^22",
 		"arktype": "^2.1.22",
