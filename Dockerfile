@@ -1,49 +1,23 @@
-# Multi-stage build for SvelteKit application using Bun
-FROM oven/bun:1 AS base
+FROM oven/bun:1 AS build
 
-# Install dependencies for building
-FROM base AS deps
 WORKDIR /app
 
-# Copy package files
-COPY package.json bun.lock ./
-# Install dependencies using bun
+COPY package.json .
+COPY bun.lock .
+
 RUN bun install --frozen-lockfile
 
-# Build the application
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Build the SvelteKit application
+RUN bun run db:migrate
 RUN bun run build
 
-# Production runtime
-FROM base AS runner
-WORKDIR /app
+FROM oven/bun:1 AS run
 
-# Create a non-root user
-RUN addgroup --system --gid 1001 bun
-RUN adduser --system --uid 1001 sveltekit
-
-# Copy the built application
-COPY --from=builder --chown=sveltekit:bun /app/build ./build
-COPY --from=builder --chown=sveltekit:bun /app/package.json ./package.json
-COPY --from=deps --chown=sveltekit:bun /app/node_modules ./node_modules
-
-# Switch to non-root user
-USER sveltekit
-
-# Expose the port the app runs on
-EXPOSE 3000
-
-# Set environment variables
 ENV NODE_ENV=production
-ENV PORT=3000
 
-# Create data directory for SQLite database
-RUN mkdir -p /app/data && chown sveltekit:bun /app/data
-
-# Start the application using Bun (run migrations then start server)
-CMD ["sh", "-c", "bun run db:migrate && bun build/index.js"]
+WORKDIR /app
+COPY --from=build /app/build ./build
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/node_modules ./node_modules
+RUN ulimit -c unlimited
+ENTRYPOINT ["node", "build"]
