@@ -28,6 +28,21 @@ With that out of the way, let's get started!
 
 ## Initial setup
 
+### Getting the application running
+
+#### Via Docker Compose (recommended)
+
+This will handle things like storage for you.
+
+```
+git clone https://github.com/skyfallWasTaken/hcb-api && cd hcb-api
+docker compose up
+```
+
+Then visit `localhost:3000`.
+
+#### Manual setup
+
 This will take about 10-15 minutes.
 
 First, install dependencies:
@@ -40,7 +55,7 @@ Fill in the `.env`:
 
 ```
 HCB_CLIENT_ID="yt8JHmPDmmYYLUmoEiGtocYwg5fSOGCrcIY3G-vkMRs" # HCB Mobile
-DATABASE_URL=<postgres database URL>
+DATABASE_URL=<sqlite database URL>
 NODE_ENV=production
 ```
 
@@ -52,7 +67,9 @@ bun .
 
 Visit `localhost:5173` (or whatever the domain is).
 
-Then, click the "Set up OAuth" button to connect HCB-API with your HCB account.
+### Configuring HCB-API
+
+Click the "Set up OAuth" button to connect HCB-API with your HCB account.
 
 ![Wizard](.github/wizard.png)
 
