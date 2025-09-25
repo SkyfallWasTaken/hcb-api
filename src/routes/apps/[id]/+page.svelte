@@ -38,6 +38,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{app.name} – HCB-API</title>
+</svelte:head>
+
 <PageHeader>
 	<svelte:fragment slot="title">{app.name}</svelte:fragment>
 

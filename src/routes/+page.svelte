@@ -13,6 +13,10 @@
 	let { data } = $props();
 </script>
 
+<svelte:head>
+	<title>Dashboard – HCB-API</title>
+</svelte:head>
+
 <PageHeader>
 	<svelte:fragment slot="title">Dashboard</svelte:fragment>
 

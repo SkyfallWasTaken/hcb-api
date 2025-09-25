@@ -16,11 +16,11 @@
 
 	let loading = false;
 
-	$: authUrl = `https://hcb.hackclub.com/api/v4/oauth/authorize?client_id=${data.clientId}&redirect_uri=hcb%3A%2F%2F&response_type=code&scope=read%20write`;
+	const authUrl = `https://hcb.hackclub.com/api/v4/oauth/authorize?client_id=${data.clientId}&redirect_uri=hcb%3A%2F%2F&response_type=code&scope=read%20write`;
 </script>
 
 <svelte:head>
-	<title>OAuth Setup hs</title>
+	<title>OAuth Setup – HCB-API</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl py-8">

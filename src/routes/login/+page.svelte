@@ -20,6 +20,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Login – HCB-API</title>
+</svelte:head>
+
 <div class="flex min-h-screen items-center justify-center bg-background">
 	<Card class="w-full max-w-md">
 		<CardHeader class="text-center">

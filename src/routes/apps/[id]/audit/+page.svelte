@@ -38,6 +38,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Audit Logs for "{app.name}" – HCB-API</title>
+</svelte:head>
+
 <PageHeader>
 	<svelte:fragment slot="title">Audit Logs - {app.name}</svelte:fragment>
 
