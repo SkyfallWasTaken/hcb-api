@@ -170,6 +170,6 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	return new Response(responseText, {
 		status: response.status,
 		statusText: response.statusText,
-  		headers: forwardHeaders
+		headers: forwardHeaders
 	});
 }

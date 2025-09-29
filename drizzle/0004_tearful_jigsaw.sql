@@ -1,0 +1,1 @@
+CREATE INDEX `oauth_tokens_oauth_client_id_idx` ON `oauth_tokens` (`oauth_client_id`);

@@ -36,7 +36,8 @@ export const oauthToken = sqliteTable(
 	},
 	(table) => [
 		index('oauth_tokens_expires_at_idx').on(table.expiresAt),
-		index('oauth_tokens_updated_at_idx').on(table.updatedAt)
+		index('oauth_tokens_updated_at_idx').on(table.updatedAt),
+		index('oauth_tokens_oauth_client_id_idx').on(table.oauthClientId)
 	]
 );
 
