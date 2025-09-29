@@ -93,7 +93,11 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	proxyHeaders.set('Authorization', `Bearer ${tokenResponse.access_token}`);
 
 	for (const [key, value] of request.headers) {
-		if (key.toLowerCase() !== 'authorization' && key.toLowerCase() !== 'host') {
+		if (
+			key.toLowerCase() !== 'authorization' && // we're setting our own!
+			key.toLowerCase() !== 'host' && // results in SSL errors
+			key.toLowerCase() !== 'accept-encoding' // prevent compressed upstream responses (otherwise you get ZLibErrors)
+		) {
 			proxyHeaders.set(key, value);
 		}
 	}
