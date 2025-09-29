@@ -7,7 +7,7 @@ import type { Logger } from 'drizzle-orm/logger';
 
 class ConsoleLogger implements Logger {
 	logQuery(query: string, params: unknown[]): void {
-		console.log({ query, params });
+		console.log(`[DB QUERY]: ${query}`);
 	}
 }
 
