@@ -157,5 +157,18 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 			console.error('Failed to insert audit log:', error);
 		});
 
-	return response;
+	const forwardHeaders = new Headers();
+	response.headers.forEach((value, key) => {
+		// This can cause issues if someone is using a reverse proxy like Traefik or Cloudflare
+		// in front of the service
+		if (key.toLowerCase() !== 'content-encoding') {
+			forwardHeaders.set(key, value);
+		}
+	});
+
+	return new Response(responseText, {
+		status: response.status,
+		statusText: response.statusText,
+  		headers: forwardHeaders
+	});
 }
