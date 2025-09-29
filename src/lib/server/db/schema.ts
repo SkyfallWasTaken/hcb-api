@@ -2,15 +2,21 @@ import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
 import { nanoid } from 'nanoid';
 import { sql } from 'drizzle-orm';
 
-export const app = sqliteTable('apps', {
-	id: text('id')
-		.primaryKey()
-		.$default(() => `app_${nanoid(6)}`),
-	appName: text('app_name').notNull(),
-	apiKeyHash: text('api_key_hash').notNull(),
-	allowMoneyMovement: integer('allow_money_movement', { mode: 'boolean' }).notNull().default(false),
-	allowCardAccess: integer('allow_card_access', { mode: 'boolean' }).notNull().default(false)
-});
+export const app = sqliteTable(
+	'apps',
+	{
+		id: text('id')
+			.primaryKey()
+			.$default(() => `app_${nanoid(6)}`),
+		appName: text('app_name').notNull(),
+		apiKeyHash: text('api_key_hash').notNull(),
+		allowMoneyMovement: integer('allow_money_movement', { mode: 'boolean' })
+			.notNull()
+			.default(false),
+		allowCardAccess: integer('allow_card_access', { mode: 'boolean' }).notNull().default(false)
+	},
+	(table) => [index('app_id_idx').on(table.id), index('app_api_key_hash_idx').on(table.apiKeyHash)]
+);
 
 export const oauthToken = sqliteTable(
 	'oauth_tokens',

@@ -8,7 +8,7 @@ const dbUrl = env.DATABASE_URL || './data/database.db';
 
 const sqlite = new Database(dbUrl);
 
-export const db = drizzle({client: sqlite, schema});
+export const db = drizzle({ client: sqlite, schema });
 export * from './schema';
 
 migrate(db, { migrationsFolder: './drizzle' });

@@ -27,7 +27,7 @@ export const actions: Actions = {
 		}
 
 		const validation = validateSetupForm(form.data);
-		if ("problems" in validation) {
+		if ('problems' in validation) {
 			return fail(400, { form });
 		}
 
