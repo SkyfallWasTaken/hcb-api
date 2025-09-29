@@ -15,7 +15,10 @@ export const app = sqliteTable(
 			.default(false),
 		allowCardAccess: integer('allow_card_access', { mode: 'boolean' }).notNull().default(false)
 	},
-	(table) => [index('app_id_idx').on(table.id), index('app_api_key_hash_idx').on(table.apiKeyHash)]
+	(table) => [
+		index('app_id_idx').on(table.id),
+		index('app_api_key_hash_idx').on(table.apiKeyHash)
+	]
 );
 
 export const oauthToken = sqliteTable(
