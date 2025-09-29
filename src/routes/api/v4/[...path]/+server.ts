@@ -10,6 +10,7 @@ import { sha256 } from '$lib/utils';
 
 const moneyMovementRoutes = [
 	'POST /organizations/*/grants',
+	'POST /organizations/*/card_grants',
 	'POST /grants/*/topup',
 	'POST /grants/*/withdraw',
 	'POST /grants/*/cancel',
