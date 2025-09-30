@@ -5,7 +5,7 @@ import { app, auditLog, type AuditLog } from '$lib/server/db/schema';
 import { env } from '$env/dynamic/private';
 import micromatch from 'micromatch';
 import type { RequestEvent } from './$types';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { sha256 } from '$lib/utils';
 
 const moneyMovementRoutes = [
@@ -109,6 +109,7 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 
 	let auditLogEntry: AuditLog | null = null;
 	if (idempotencyKey && dataMutationMethods.includes(method)) {
+		// We have a unique index on (appId, idempotencyKey) so this is safe
 		auditLogEntry = (await db.insert(auditLog)
 			.values({
 				appId: validApp.id,
@@ -132,18 +133,13 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	const tokenResponse = await getValidTokenResponse(env.HCB_CLIENT_ID);
 	const targetUrl = `https://hcb.hackclub.com/api/v4${targetPath}${url.search}`;
 
-	const proxyHeaders = new Headers();
+	const proxyHeaders = filterHeaders(request.headers, [
+		"authorization", // we're setting our own!
+		"host", // results in SSL errors
+		"accept-encoding", // prevent compressed upstream responses (otherwise you get ZLibErrors)
+		"x-idempotency-key"
+	]);
 	proxyHeaders.set('Authorization', `Bearer ${tokenResponse.access_token}`);
-
-	for (const [key, value] of request.headers) {
-		if (
-			key.toLowerCase() !== 'authorization' && // we're setting our own!
-			key.toLowerCase() !== 'host' && // results in SSL errors
-			key.toLowerCase() !== 'accept-encoding' // prevent compressed upstream responses (otherwise you get ZLibErrors)
-		) {
-			proxyHeaders.set(key, value);
-		}
-	}
 
 	const response = await fetch(targetUrl, {
 		method,
@@ -172,7 +168,10 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 				responseHeaders: JSON.stringify(responseHeaders),
 				responseBody: responseText
 			})
-			.where(eq(auditLog.id, auditLogEntry.id));
+			.where(and(
+				eq(auditLog.id, auditLogEntry.id),
+				eq(auditLog.appId, validApp.id)
+			));
 	} else {
 		db.insert(auditLog)
 			.values({
@@ -192,18 +191,23 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 			});
 	}
 
-	const forwardHeaders = new Headers();
-	response.headers.forEach((value, key) => {
-		// This can cause issues if someone is using a reverse proxy like Traefik or Cloudflare
-		// in front of the service
-		if (key.toLowerCase() !== 'content-encoding') {
-			forwardHeaders.set(key, value);
-		}
-	});
+	// This can cause issues if someone is using a reverse proxy like Traefik or Cloudflare
+	// in front of the service
+	const forwardHeaders = filterHeaders(response.headers, ["content-type"])
 
 	return new Response(responseText, {
 		status: response.status,
 		statusText: response.statusText,
 		headers: forwardHeaders
 	});
+}
+
+function filterHeaders(headers: Headers, filters: string[]): Headers {
+	const result = new Headers();
+	headers.forEach((value, key) => {
+		if (filters.includes(key.toLowerCase())) {
+			result.set(key, value);
+		}
+	});
+	return result;
 }
