@@ -86,14 +86,7 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	}
 
 	// Audit logging!
-	const filteredRequestHeaders: Record<string, string> = {};
-	request.headers.forEach((value, key) => {
-		if (key.toLowerCase() === 'authorization') {
-			filteredRequestHeaders[key] = '[FILTERED]';
-		} else {
-			filteredRequestHeaders[key] = value;
-		}
-	});
+	const filteredRequestHeaders = replaceHeaders(request.headers, ["authorization"], "[REDACTED]");
 
 	let requestBody: string | null = null;
 	try {
@@ -110,20 +103,16 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	let auditLogEntry: AuditLog | null = null;
 	if (idempotencyKey && dataMutationMethods.includes(method)) {
 		// We have a unique index on (appId, idempotencyKey) so this is safe
-		auditLogEntry = (await db.insert(auditLog)
-			.values({
-				appId: validApp.id,
-				method,
-				path: targetPath,
-				userIp,
-				requestHeaders: JSON.stringify(filteredRequestHeaders),
-				requestBody,
-				idempotencyKey,
-				// Will be auto-updated later
-				responseStatus: 0,
-				responseHeaders: '{}',
-			})
-			.returning())[0];
+		auditLogEntry = (await createAuditLog(
+			validApp.id,
+			request,
+			requestBody || '',
+			filteredRequestHeaders,
+			null,
+			null,
+			targetPath,
+			userIp
+		))[0];
 	}
 
 	if (!env.HCB_CLIENT_ID) {
@@ -133,7 +122,7 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	const tokenResponse = await getValidTokenResponse(env.HCB_CLIENT_ID);
 	const targetUrl = `https://hcb.hackclub.com/api/v4${targetPath}${url.search}`;
 
-	const proxyHeaders = filterHeaders(request.headers, [
+	const proxyHeaders = excludeHeaders(request.headers, [
 		"authorization", // we're setting our own!
 		"host", // results in SSL errors
 		"accept-encoding", // prevent compressed upstream responses (otherwise you get ZLibErrors)
@@ -155,36 +144,10 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		console.warn('Could not read response body for audit logging:', error);
 	}
 
-	const responseHeaders: Record<string, string> = {};
-	response.headers.forEach((value, key) => {
-		responseHeaders[key] = value;
-	});
-
 	if (auditLogEntry) {
-		await db
-			.update(auditLog)
-			.set({
-				responseStatus: response.status,
-				responseHeaders: JSON.stringify(responseHeaders),
-				responseBody: responseText
-			})
-			.where(and(
-				eq(auditLog.id, auditLogEntry.id),
-				eq(auditLog.appId, validApp.id)
-			));
+		await updateAuditLog(auditLogEntry.id, response, responseText);
 	} else {
-		db.insert(auditLog)
-			.values({
-				appId: validApp.id,
-				method,
-				path: targetPath,
-				userIp,
-				requestHeaders: JSON.stringify(filteredRequestHeaders),
-				requestBody,
-				responseStatus: response.status,
-				responseHeaders: JSON.stringify(responseHeaders),
-				responseBody: responseText
-			})
+		createAuditLog(validApp.id, request, requestBody || '', filteredRequestHeaders, response, responseText, targetPath, userIp)
 			.catch((error) => {
 				// log the error, but don't fail the request
 				console.error('Failed to insert audit log:', error);
@@ -193,7 +156,7 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 
 	// This can cause issues if someone is using a reverse proxy like Traefik or Cloudflare
 	// in front of the service
-	const forwardHeaders = filterHeaders(response.headers, ["content-type"])
+	const forwardHeaders = excludeHeaders(response.headers, ["content-type"])
 
 	return new Response(responseText, {
 		status: response.status,
@@ -202,12 +165,48 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	});
 }
 
-function filterHeaders(headers: Headers, filters: string[]): Headers {
+async function createAuditLog(appId: string, request: Request, requestBody: string, filteredRequestHeaders: Headers, response: Response | null, responseText: string | null, targetPath: string, userIp: string) {
+	return await db.insert(auditLog)
+		.values({
+			appId,
+			method: request.method,
+			path: targetPath,
+			userIp,
+			requestHeaders: JSON.stringify(filteredRequestHeaders),
+			requestBody,
+			responseStatus: response?.status || 0,
+			responseHeaders: response ? JSON.stringify(response.headers) : "{}",
+			responseBody: responseText,
+			idempotencyKey: request.headers.get('X-Idempotency-Key') || undefined
+		})
+		.returning();
+}
+
+async function updateAuditLog(id: string, response: Response, responseText: string | null) {
+	await db
+		.update(auditLog)
+		.set({
+			responseStatus: response.status,
+			responseHeaders: JSON.stringify(response.headers),
+			responseBody: responseText
+		})
+		.where(eq(auditLog.id, id));
+}
+
+function excludeHeaders(headers: Headers, exclusions: string[]): Headers {
 	const result = new Headers();
 	headers.forEach((value, key) => {
-		if (filters.includes(key.toLowerCase())) {
+		if (!exclusions.includes(key.toLowerCase())) {
 			result.set(key, value);
 		}
+	});
+	return result;
+}
+
+function replaceHeaders(headers: Headers, toBeReplaced: string[], replaceWith: string): Headers {
+	const result = new Headers();
+	headers.forEach((value, key) => {
+		result.set(key, toBeReplaced.includes(key.toLowerCase()) ? replaceWith : value);
 	});
 	return result;
 }
