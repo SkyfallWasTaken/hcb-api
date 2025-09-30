@@ -117,14 +117,21 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 
 	let auditLogEntry: AuditLog | null = null;
 	if (idempotencyKey && DATA_MUTATION_METHODS.includes(method as any)) {
-		auditLogEntry = await createInitialAuditLog(
-			validApp.id,
-			request,
-			requestBody,
-			filteredRequestHeaders,
-			targetPath,
-			userIp
-		);
+		try {
+			auditLogEntry = await createInitialAuditLog(
+				validApp.id,
+				request,
+				requestBody,
+				filteredRequestHeaders,
+				targetPath,
+				userIp
+			);
+		} catch (error) {
+			return json(
+				{ error: `Failed to create initial audit log: ${error}. This probably means that you reused an idempotency key.` },
+				{ status: 409 }
+			);
+		}
 	}
 
 	if (!env.HCB_CLIENT_ID) {
