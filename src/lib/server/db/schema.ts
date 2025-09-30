@@ -90,3 +90,4 @@ export const auditLog = sqliteTable(
 );
 
 export type AuditLog = typeof auditLog.$inferSelect;
+export type App = typeof app.$inferSelect;

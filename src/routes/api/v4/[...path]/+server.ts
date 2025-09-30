@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getValidTokenResponse } from '$lib/server/oauth';
 import { db } from '$lib/server/db/index';
-import { app, auditLog, type AuditLog } from '$lib/server/db/schema';
+import { app, auditLog, type AuditLog, type App } from '$lib/server/db/schema';
 import { env } from '$env/dynamic/private';
 import micromatch from 'micromatch';
 import type { RequestEvent } from './$types';
@@ -12,13 +12,6 @@ import { sha256 } from '$lib/utils';
 interface PermissionCheck {
 	allowed: boolean;
 	required?: string;
-}
-
-interface AppData {
-	id: string;
-	allowMoneyMovement: boolean;
-	allowCardAccess: boolean;
-	apiKeyHash: string;
 }
 
 // Constants
@@ -60,14 +53,14 @@ const HEADERS_TO_EXCLUDE = [
 
 const HEADERS_TO_REDACT = ['authorization'] as const;
 
-function checkPermissions(method: string, path: string, appData: AppData): PermissionCheck {
+function checkPermissions(method: string, path: string, app: App): PermissionCheck {
 	const route = `${method} ${path}`;
 
-	if (!appData.allowMoneyMovement && micromatch.isMatch(route, MONEY_MOVEMENT_ROUTES)) {
+	if (!app.allowMoneyMovement && micromatch.isMatch(route, MONEY_MOVEMENT_ROUTES)) {
 		return { allowed: false, required: 'allowMoneyMovement' };
 	}
 
-	if (!appData.allowCardAccess && micromatch.isMatch(route, CARD_ACCESS_ROUTES)) {
+	if (!app.allowCardAccess && micromatch.isMatch(route, CARD_ACCESS_ROUTES)) {
 		return { allowed: false, required: 'allowCardAccess' };
 	}
 
