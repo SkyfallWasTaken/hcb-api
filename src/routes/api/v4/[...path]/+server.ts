@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getValidTokenResponse } from '$lib/server/oauth';
 import { db } from '$lib/server/db/index';
-import { app, auditLog } from '$lib/server/db/schema';
+import { app, auditLog, type AuditLog } from '$lib/server/db/schema';
 import { env } from '$env/dynamic/private';
 import micromatch from 'micromatch';
 import type { RequestEvent } from './$types';
@@ -34,6 +34,8 @@ const cardAccessRoutes = [
 	'PUT /grants/*',
 	'PATCH /grants/*'
 ];
+
+const dataMutationMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
 function checkPermissions(method: string, path: string, appData: any) {
 	const route = `${method} ${path}`;
@@ -83,6 +85,46 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		);
 	}
 
+	// Audit logging!
+	const filteredRequestHeaders: Record<string, string> = {};
+	request.headers.forEach((value, key) => {
+		if (key.toLowerCase() === 'authorization') {
+			filteredRequestHeaders[key] = '[FILTERED]';
+		} else {
+			filteredRequestHeaders[key] = value;
+		}
+	});
+
+	let requestBody: string | null = null;
+	try {
+		const bodyText = await request.text();
+		if (bodyText && bodyText.trim() !== '') {
+			requestBody = bodyText;
+		}
+	} catch (error) {
+		console.warn('Could not read request body for audit logging:', error);
+	}
+
+	const idempotencyKey = request.headers.get('X-Idempotency-Key');
+
+	let auditLogEntry: AuditLog | null = null;
+	if (idempotencyKey && dataMutationMethods.includes(method)) {
+		auditLogEntry = (await db.insert(auditLog)
+			.values({
+				appId: validApp.id,
+				method,
+				path: targetPath,
+				userIp,
+				requestHeaders: JSON.stringify(filteredRequestHeaders),
+				requestBody,
+				idempotencyKey,
+				// Will be auto-updated later
+				responseStatus: 0,
+				responseHeaders: '{}',
+			})
+			.returning())[0];
+	}
+
 	if (!env.HCB_CLIENT_ID) {
 		return json({ error: 'HCB_CLIENT_ID not configured' }, { status: 500 });
 	}
@@ -101,16 +143,6 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		) {
 			proxyHeaders.set(key, value);
 		}
-	}
-
-	let requestBody: string | null = null;
-	try {
-		const bodyText = await request.text();
-		if (bodyText && bodyText.trim() !== '') {
-			requestBody = bodyText;
-		}
-	} catch (error) {
-		console.warn('Could not read request body for audit logging:', error);
 	}
 
 	const response = await fetch(targetUrl, {
@@ -132,31 +164,33 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		responseHeaders[key] = value;
 	});
 
-	const filteredRequestHeaders: Record<string, string> = {};
-	request.headers.forEach((value, key) => {
-		if (key.toLowerCase() === 'authorization') {
-			filteredRequestHeaders[key] = '[FILTERED]';
-		} else {
-			filteredRequestHeaders[key] = value;
-		}
-	});
-
-	db.insert(auditLog)
-		.values({
-			appId: validApp.id,
-			method,
-			path: targetPath,
-			userIp,
-			requestHeaders: JSON.stringify(filteredRequestHeaders),
-			requestBody,
-			responseStatus: response.status,
-			responseHeaders: JSON.stringify(responseHeaders),
-			responseBody: responseText
-		})
-		.catch((error) => {
-			// log the error, but don't fail the request
-			console.error('Failed to insert audit log:', error);
-		});
+	if (auditLogEntry) {
+		await db
+			.update(auditLog)
+			.set({
+				responseStatus: response.status,
+				responseHeaders: JSON.stringify(responseHeaders),
+				responseBody: responseText
+			})
+			.where(eq(auditLog.id, auditLogEntry.id));
+	} else {
+		db.insert(auditLog)
+			.values({
+				appId: validApp.id,
+				method,
+				path: targetPath,
+				userIp,
+				requestHeaders: JSON.stringify(filteredRequestHeaders),
+				requestBody,
+				responseStatus: response.status,
+				responseHeaders: JSON.stringify(responseHeaders),
+				responseBody: responseText
+			})
+			.catch((error) => {
+				// log the error, but don't fail the request
+				console.error('Failed to insert audit log:', error);
+			});
+	}
 
 	const forwardHeaders = new Headers();
 	response.headers.forEach((value, key) => {
