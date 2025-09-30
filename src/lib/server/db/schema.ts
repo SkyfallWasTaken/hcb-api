@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, index, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { nanoid } from 'nanoid';
 import { sql } from 'drizzle-orm';
 
@@ -75,6 +75,7 @@ export const auditLog = sqliteTable(
 		responseStatus: integer('response_status').notNull(),
 		responseHeaders: text('response_headers').notNull(),
 		responseBody: text('response_body'),
+		idempotencyKey: text('idempotency_key'),
 		timestamp: text('timestamp')
 			.default(sql`(CURRENT_TIMESTAMP)`)
 			.notNull()
@@ -83,6 +84,10 @@ export const auditLog = sqliteTable(
 		index('audit_logs_app_id_timestamp_idx').on(table.appId, table.timestamp),
 		index('audit_logs_timestamp_idx').on(table.timestamp),
 		index('audit_logs_method_idx').on(table.method),
-		index('audit_logs_response_status_idx').on(table.responseStatus)
+		index('audit_logs_response_status_idx').on(table.responseStatus),
+		uniqueIndex('audit_logs_app_id_idempotency_key_idx').on(table.appId, table.idempotencyKey)
 	]
 );
+
+export type AuditLog = typeof auditLog.$inferSelect;
+export type App = typeof app.$inferSelect;

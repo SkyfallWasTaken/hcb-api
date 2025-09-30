@@ -36,6 +36,20 @@
       "when": 1759140335717,
       "tag": "0004_tearful_jigsaw",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1759261981419,
+      "tag": "0005_lethal_lilith",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1759263070681,
+      "tag": "0006_slim_psylocke",
+      "breakpoints": true
     }
   ]
 }
