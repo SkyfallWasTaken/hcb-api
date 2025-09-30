@@ -5,7 +5,7 @@ import { app, auditLog, type AuditLog } from '$lib/server/db/schema';
 import { env } from '$env/dynamic/private';
 import micromatch from 'micromatch';
 import type { RequestEvent } from './$types';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { sha256 } from '$lib/utils';
 
 // Types
@@ -115,24 +115,21 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 	const requestBody = await safeReadRequestBody(request);
 	const filteredRequestHeaders = replaceHeaders(request.headers, HEADERS_TO_REDACT, '[REDACTED]');
 
-	let auditLogEntry: AuditLog | null = null;
-	if (idempotencyKey && DATA_MUTATION_METHODS.includes(method as any)) {
-		try {
-			auditLogEntry = await createInitialAuditLog(
-				validApp.id,
-				request,
-				requestBody,
-				filteredRequestHeaders,
-				targetPath,
-				userIp
-			);
-		} catch (error) {
-			return json(
-				{ error: `Failed to create initial audit log: ${error}. This probably means that you reused an idempotency key.` },
-				{ status: 409 }
-			);
-		}
+	const auditResult = await handleIdempotency(
+		validApp.id,
+		request,
+		requestBody,
+		filteredRequestHeaders,
+		targetPath,
+		userIp,
+		idempotencyKey
+	);
+
+	if (auditResult.response) {
+		return auditResult.response;
 	}
+
+	const auditLogEntry = auditResult.auditLogEntry;
 
 	if (!env.HCB_CLIENT_ID) {
 		return json({ error: 'HCB_CLIENT_ID not configured' }, { status: 500 });
@@ -273,6 +270,82 @@ async function updateAuditLog(
 			responseBody: responseText
 		})
 		.where(eq(auditLog.id, id));
+}
+
+async function handleIdempotency(
+	appId: string,
+	request: Request,
+	requestBody: string,
+	filteredRequestHeaders: Headers,
+	targetPath: string,
+	userIp: string,
+	idempotencyKey: string | null
+): Promise<{ auditLogEntry: AuditLog | null; response?: Response }> {
+	if (!idempotencyKey || !DATA_MUTATION_METHODS.includes(request.method as any)) {
+		return { auditLogEntry: null };
+	}
+
+	try {
+		const auditLogEntry = await createInitialAuditLog(
+			appId,
+			request,
+			requestBody,
+			filteredRequestHeaders,
+			targetPath,
+			userIp
+		);
+		return { auditLogEntry };
+	} catch (error) {
+		const existingLog = await checkIdempotencyKeyCollision(appId, idempotencyKey);
+
+		if (existingLog) {
+			const response = handleIdempotencyCollision(existingLog, requestBody);
+			return { auditLogEntry: null, response };
+		}
+
+		return {
+			auditLogEntry: null,
+			response: json({ error: `Failed to create initial audit log: ${error}` }, { status: 500 })
+		};
+	}
+}
+
+function handleIdempotencyCollision(existingLog: AuditLog, requestBody: string): Response {
+	if (existingLog.requestBody !== requestBody) {
+		return json(
+			{ error: 'Idempotency key reused with different request data' },
+			{ status: 409 }
+		);
+	}
+
+	if (existingLog.responseStatus === 0) {
+		return json(
+			{ error: 'Request with this idempotency key is still being processed' },
+			{ status: 409 }
+		);
+	}
+
+	const originalHeaders = JSON.parse(existingLog.responseHeaders || '{}');
+	return new Response(existingLog.responseBody, {
+		status: existingLog.responseStatus,
+		headers: originalHeaders
+	});
+}
+
+async function checkIdempotencyKeyCollision(
+	appId: string,
+	idempotencyKey: string
+): Promise<AuditLog | null> {
+	const [existingLog] = await db
+		.select()
+		.from(auditLog)
+		.where(and(
+			eq(auditLog.appId, appId),
+			eq(auditLog.idempotencyKey, idempotencyKey)
+		))
+		.limit(1);
+
+	return existingLog || null;
 }
 
 function excludeHeaders(headers: Headers, exclusions: readonly string[]): Headers {
