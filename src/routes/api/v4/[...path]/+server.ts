@@ -149,8 +149,8 @@ async function handleProxyRequest({ request, url, getClientAddress }: RequestEve
 		});
 	}
 
-	// this header can cause issues with reverse proxies
-	const forwardHeaders = excludeHeaders(response.headers, ['content-type']);
+	// these headers can cause issues with reverse proxies (e.g. cloudflare)
+	const forwardHeaders = excludeHeaders(response.headers, ['content-type', 'content-encoding']);
 	return new Response(responseText, {
 		status: response.status,
 		statusText: response.statusText,
