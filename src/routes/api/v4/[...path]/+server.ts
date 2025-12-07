@@ -16,13 +16,14 @@ interface PermissionCheck {
 
 // Constants
 const MONEY_MOVEMENT_ROUTES = [
-	'POST /organizations/*/grants',
 	'POST /organizations/*/card_grants',
-	'POST /grants/*/topup',
-	'POST /grants/*/withdraw',
-	'POST /grants/*/cancel',
+	'POST /card_grants/*/topup',
+	'POST /card_grants/*/withdraw',
+	'POST /card_grants/*/cancel',
 	'POST /organizations/*/transfers',
-	'POST /organizations/*/donations'
+	'POST /organizations/*/donations',
+	'POST /organizations/*/ach_transfers',
+	'POST /invoices'
 ] as const;
 
 const CARD_ACCESS_ROUTES = [
