@@ -24,7 +24,11 @@ export const load: PageServerLoad = async (event) => {
 	const form = await superValidate(
 		{
 			allowMoneyMovement: selectedApp.allowMoneyMovement,
-			allowCardAccess: selectedApp.allowCardAccess
+			allowCardAccess: selectedApp.allowCardAccess,
+			allowFundraising: selectedApp.allowFundraising,
+			allowBookkeeping: selectedApp.allowBookkeeping,
+			allowOrgAdmin: selectedApp.allowOrgAdmin,
+			allowViewFinancials: selectedApp.allowViewFinancials
 		},
 		arktype(appPermissionsSchema)
 	);
@@ -39,7 +43,11 @@ export const load: PageServerLoad = async (event) => {
 			id: selectedApp.id,
 			name: selectedApp.name,
 			allowMoneyMovement: selectedApp.allowMoneyMovement,
-			allowCardAccess: selectedApp.allowCardAccess
+			allowCardAccess: selectedApp.allowCardAccess,
+			allowFundraising: selectedApp.allowFundraising,
+			allowBookkeeping: selectedApp.allowBookkeeping,
+			allowOrgAdmin: selectedApp.allowOrgAdmin,
+			allowViewFinancials: selectedApp.allowViewFinancials
 		},
 		form,
 		deleteForm,
@@ -61,7 +69,11 @@ export const actions: Actions = {
 			.update(app)
 			.set({
 				allowMoneyMovement: form.data.allowMoneyMovement,
-				allowCardAccess: form.data.allowCardAccess
+				allowCardAccess: form.data.allowCardAccess,
+				allowFundraising: form.data.allowFundraising,
+				allowBookkeeping: form.data.allowBookkeeping,
+				allowOrgAdmin: form.data.allowOrgAdmin,
+				allowViewFinancials: form.data.allowViewFinancials
 			})
 			.where(eq(app.id, params.id));
 

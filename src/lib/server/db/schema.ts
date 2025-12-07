@@ -13,7 +13,13 @@ export const app = sqliteTable(
 		allowMoneyMovement: integer('allow_money_movement', { mode: 'boolean' })
 			.notNull()
 			.default(false),
-		allowCardAccess: integer('allow_card_access', { mode: 'boolean' }).notNull().default(false)
+		allowCardAccess: integer('allow_card_access', { mode: 'boolean' }).notNull().default(false),
+		allowFundraising: integer('allow_fundraising', { mode: 'boolean' }).notNull().default(false),
+		allowBookkeeping: integer('allow_bookkeeping', { mode: 'boolean' }).notNull().default(false),
+		allowOrgAdmin: integer('allow_org_admin', { mode: 'boolean' }).notNull().default(false),
+		allowViewFinancials: integer('allow_view_financials', { mode: 'boolean' })
+			.notNull()
+			.default(false)
 	},
 	(table) => [
 		index('app_id_idx').on(table.id),

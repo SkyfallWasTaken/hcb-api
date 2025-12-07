@@ -21,9 +21,7 @@ const MONEY_MOVEMENT_ROUTES = [
 	'POST /card_grants/*/withdraw',
 	'POST /card_grants/*/cancel',
 	'POST /organizations/*/transfers',
-	'POST /organizations/*/donations',
-	'POST /organizations/*/ach_transfers',
-	'POST /invoices'
+	'POST /organizations/*/ach_transfers'
 ] as const;
 
 const CARD_ACCESS_ROUTES = [
@@ -41,6 +39,30 @@ const CARD_ACCESS_ROUTES = [
 	'GET /grants/*',
 	'PUT /grants/*',
 	'PATCH /grants/*'
+] as const;
+
+const FUNDRAISING_ROUTES = [
+	'POST /invoices',
+	'POST /organizations/*/donations',
+	'POST /organizations/*/sponsors'
+] as const;
+
+const BOOKKEEPING_ROUTES = [
+	'POST /transactions/*/comments',
+	'POST /transactions/*/receipts',
+	'PATCH /transactions/*'
+] as const;
+
+const ORG_ADMIN_ROUTES = [
+	'POST /organizations/*/sub_organizations',
+	'PATCH /organizations/*'
+] as const;
+
+const VIEW_FINANCIALS_ROUTES = [
+	'GET /transactions',
+	'GET /transactions/*',
+	'GET /organizations/*/transactions',
+	'GET /organizations/*'
 ] as const;
 
 const DATA_MUTATION_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE'] as const;
@@ -63,6 +85,22 @@ function checkPermissions(method: string, path: string, app: App): PermissionChe
 
 	if (!app.allowCardAccess && micromatch.isMatch(route, CARD_ACCESS_ROUTES)) {
 		return { allowed: false, required: 'allowCardAccess' };
+	}
+
+	if (!app.allowFundraising && micromatch.isMatch(route, FUNDRAISING_ROUTES)) {
+		return { allowed: false, required: 'allowFundraising' };
+	}
+
+	if (!app.allowBookkeeping && micromatch.isMatch(route, BOOKKEEPING_ROUTES)) {
+		return { allowed: false, required: 'allowBookkeeping' };
+	}
+
+	if (!app.allowOrgAdmin && micromatch.isMatch(route, ORG_ADMIN_ROUTES)) {
+		return { allowed: false, required: 'allowOrgAdmin' };
+	}
+
+	if (!app.allowViewFinancials && micromatch.isMatch(route, VIEW_FINANCIALS_ROUTES)) {
+		return { allowed: false, required: 'allowViewFinancials' };
 	}
 
 	return { allowed: true };

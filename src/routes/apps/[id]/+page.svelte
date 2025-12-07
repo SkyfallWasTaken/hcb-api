@@ -55,6 +55,10 @@
 <form method="POST" action="?/updatePermissions" use:enhance class="px-6 pb-8">
 	<input type="hidden" name="allowMoneyMovement" value={$form.allowMoneyMovement} />
 	<input type="hidden" name="allowCardAccess" value={$form.allowCardAccess} />
+	<input type="hidden" name="allowFundraising" value={$form.allowFundraising} />
+	<input type="hidden" name="allowBookkeeping" value={$form.allowBookkeeping} />
+	<input type="hidden" name="allowOrgAdmin" value={$form.allowOrgAdmin} />
+	<input type="hidden" name="allowViewFinancials" value={$form.allowViewFinancials} />
 
 	{#if flash?.data?.apiKey}
 		<Card class="mb-8 sm:w-full md:w-1/2 lg:w-1/3">
@@ -95,6 +99,38 @@
 			<p class="text-sm text-muted-foreground">Allow this app to access and manage user cards.</p>
 		</div>
 		<Switch bind:checked={$form.allowCardAccess} />
+
+		<div class="space-y-0.5">
+			<Label class="text-base font-medium">Enable fundraising</Label>
+			<p class="text-sm text-muted-foreground">
+				Allow this app to create invoices, donations, and sponsors (inbound funds).
+			</p>
+		</div>
+		<Switch bind:checked={$form.allowFundraising} />
+
+		<div class="space-y-0.5">
+			<Label class="text-base font-medium">Enable bookkeeping</Label>
+			<p class="text-sm text-muted-foreground">
+				Allow this app to add comments, receipts, and update transaction metadata.
+			</p>
+		</div>
+		<Switch bind:checked={$form.allowBookkeeping} />
+
+		<div class="space-y-0.5">
+			<Label class="text-base font-medium">Enable organization admin</Label>
+			<p class="text-sm text-muted-foreground">
+				Allow this app to create sub-organizations and update organization settings.
+			</p>
+		</div>
+		<Switch bind:checked={$form.allowOrgAdmin} />
+
+		<div class="space-y-0.5">
+			<Label class="text-base font-medium">Enable viewing financials</Label>
+			<p class="text-sm text-muted-foreground">
+				Allow this app to view transactions and organization balances.
+			</p>
+		</div>
+		<Switch bind:checked={$form.allowViewFinancials} />
 
 		<Button
 			variant="secondary"

@@ -28,7 +28,11 @@ export const load = loadFlash(async ({ url, cookies }) => {
 			id: app.id,
 			name: app.appName,
 			allowMoneyMovement: app.allowMoneyMovement,
-			allowCardAccess: app.allowCardAccess
+			allowCardAccess: app.allowCardAccess,
+			allowFundraising: app.allowFundraising,
+			allowBookkeeping: app.allowBookkeeping,
+			allowOrgAdmin: app.allowOrgAdmin,
+			allowViewFinancials: app.allowViewFinancials
 		})
 		.from(app);
 

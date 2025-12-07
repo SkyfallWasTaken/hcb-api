@@ -1,4 +1,4 @@
-import { type } from 'arktype';
+import { type, ArkErrors } from 'arktype';
 
 // Schema for setup form - requires password and confirmation
 export const setupSchema = type({
@@ -15,8 +15,7 @@ export const loginSchema = type({
 export const validateSetupForm = (data: { password: string; confirmPassword: string }) => {
 	const baseValidation = setupSchema(data);
 
-	if (!baseValidation.problems) {
-		// Check if passwords match
+	if (!(baseValidation instanceof ArkErrors)) {
 		if (data.password !== data.confirmPassword) {
 			return {
 				problems: [

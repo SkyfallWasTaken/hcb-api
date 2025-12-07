@@ -6,7 +6,11 @@ export const newAppSchema = type({
 
 export const appPermissionsSchema = type({
 	allowMoneyMovement: 'boolean',
-	allowCardAccess: 'boolean'
+	allowCardAccess: 'boolean',
+	allowFundraising: 'boolean',
+	allowBookkeeping: 'boolean',
+	allowOrgAdmin: 'boolean',
+	allowViewFinancials: 'boolean'
 });
 
 export const deleteAppSchema = type({
