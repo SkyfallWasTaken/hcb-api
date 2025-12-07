@@ -191,6 +191,7 @@ async function makeUpstreamRequest(
 
 	const proxyHeaders = excludeHeaders(request.headers, HEADERS_TO_EXCLUDE);
 	proxyHeaders.set('Authorization', `Bearer ${tokenResponse.access_token}`);
+	proxyHeaders.set('User-Agent', 'HCB-Mobile');
 
 	return fetch(targetUrl, {
 		method,
